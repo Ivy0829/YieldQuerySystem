@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    @*<title>@ViewData["Title"] - Yield Summary</title>*@
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @*<link rel="stylesheet" href="~/css/site.css" />*@
+    <link rel="stylesheet" href="~/css/StyleSheet.css" />
+</head>
+
+<body>
+    <header>
+        <nav class="navbar-expand-lg navbar-dark" style="background-color: rgb(7, 76, 224) !important;">
+            <b><a class="navbar-brand" style="color: white; margin-top: 8px; margin-right: -8px; font-size: 3em;">Yield Query System</a></b>
+        </nav>
+    </header>
+    <div class="navigation open">
+        <div class="menuToggle"></div>
+        <ul>
+            <b>
+            <li class="list" id="SummaryYield" style="--clr:#f44336;">
+                <a href="~/Home/CloseYieldbyDay">
+                    @*<a href="#">*@
+                    <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
+                    <span class="text">Yield Summary</span>
+                </a>
+            </li>
+            <li class="list" id="CloseYield" style="--clr:#2196f3;">
+                <a href="~/Home/CloseYieldbyLot">
+                    <span class="icon"><ion-icon name="pricetag-outline"></ion-icon></span>
+                    <span class="text">Close Yield by Lot</span>
+                </a>
+            </li>
+            <li class="list" id="StageDailyYield" style="--clr:#ffa117;">
+                <a href="~/Home/DailyYield">
+                    <span class="icon"><ion-icon name="create-outline"></ion-icon></span>
+                    <span class="text">Daily Yield</span>
+                </a>
+            </li>
+            <li class="list" id="StageDailyDefect" style="--clr:#548C00; ">
+                <a href="~/Home/DailyDefect">
+                    <span class="icon"><ion-icon name="calendar-outline"></ion-icon></span>
+                    <span class="text">Daily Defect</span>
+                </a>
+            </li>
+            <li class="list" id="YieldSet" style="--clr: #C4C400; ">
+                <a href="~/Home/LowYieldSetting">
+                    <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
+                    <span class="text">Low Yield Notice Setting</span>
+                </a>
+            </li>
+            <li class="list" id="ImportData" style="--clr:#b145e9;">
+                <a href="~/Import/Index">
+                    <span class="icon"><ion-icon name="cloud-upload-outline"></ion-icon></span>
+                    <span class="text">Import Raw Data</span>
+                </a>
+            </li>
+            </b>
+        </ul>
+    </div>
+
+    @*<div class="container">
+    <main role="main" class="pb-3">*@
+    @RenderBody()
+    @*</main>
+    </div>*@
+    @*<footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2022 - YieldQuerySystem - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            </div>
+        </footer>*@
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/Index.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

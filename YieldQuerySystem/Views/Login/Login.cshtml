@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "登入頁";
+}
+
+
+
+
+@*<div class="text-center">*@
+<div style="text-align: center; align-items: center">
+    <form action="Home/CloseYieldbyDay">
+        <div class="mb-4 mt-4">
+            <b><label for="text" class="form-label">Account</label></b>
+            @*<input type="text" style="ime-mode:disabled" class="form-control" id="username" placeholder="Enter EmpNo" name="username" onkeyup="value=value.replace(/[\W]/g,'')">*@
+            @*<input type="text" style="ime-mode:disabled" class="form-control" id="username" placeholder="Enter EmpNo" name="username" onkeyup="value=value.replace(/[\W]/g,'')">*@
+            <input type="text" id="username" name="username" style="ime-mode:disabled" onkeyup="value=value.replace(/[\W]/g,'')" placeholder="Enter EmpNo" />
+        </div>
+        <div class="mb-4 mt-4">
+            <b><label for="pswd" class="form-label">Password</label></b>
+            <input type="password" id="pswd" placeholder="Enter password" name="pswd">
+        </div>
+        <div class="form-check mb-3">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="remember"> Remember me
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#titlebar").hide();
+            $(".navigation").hide();
+        });
+
+    </script>
+}
