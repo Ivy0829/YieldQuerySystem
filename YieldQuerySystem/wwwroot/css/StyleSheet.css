@@ -188,7 +188,8 @@ body {
 }
 
 .top-area {
-    position: fixed;
+    /*position: fixed;*/
+    position: inherit;
     inset: 72px 72px 700px 300px;
     display: flex;
     align-content: stretch;

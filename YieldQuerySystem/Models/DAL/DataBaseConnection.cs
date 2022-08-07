@@ -6,6 +6,7 @@ using Dapper;
 using System.Data.SqlClient;
 using System.Data;
 using Dapper.FluentColumnMapping;
+using YieldQuerySystem.Models.ViewModel;
 
 namespace YieldQuerySystem.Models.DAL
 {
@@ -66,5 +67,29 @@ namespace YieldQuerySystem.Models.DAL
             this._conn.Close();
             return result;
         }
+        
+        public List<DailyYieldViewModel> QueryDailyYieldByStage(QueryDailyYield model)
+        {
+
+            List <DailyYieldViewModel> vm = new List<DailyYieldViewModel>();
+            this._conn.Open();
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@Plant", "abc", DbType.String, ParameterDirection.Input);
+            parameters.Add("@Cust2Code", "abc", DbType.String, ParameterDirection.Input);
+            parameters.Add("@Cust3Code", "abc", DbType.String, ParameterDirection.Input);
+            parameters.Add("@PKGCode", "abc", DbType.String, ParameterDirection.Input);
+            parameters.Add("@DeviceName", "abc", DbType.String, ParameterDirection.Input);
+            parameters.Add("@StartTime", "abc", DbType.DateTime, ParameterDirection.Input);
+            parameters.Add("@EndTime", "abc", DbType.DateTime, ParameterDirection.Input);
+
+            var result = this._conn.Query<DailyYieldViewModel>("[dbo].[SP_DailyYieldByStage", parameters, commandType: CommandType.StoredProcedure);
+            vm = result.ToList();
+            return vm;
+
+
+        }
+
+
+
     }
 }

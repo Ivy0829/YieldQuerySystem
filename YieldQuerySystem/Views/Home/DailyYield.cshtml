@@ -70,8 +70,65 @@
             </td>
 
             <button id="buttonQuery" class="button1">Query</button>
-
         </div>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Stage Code</th>
+                        <th scope="col">Schedule</th>
+                        <th scope="col">date1</th>
+                        <th scope="col">date2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <td rowspan="5">2900</td>
+                    <tr>
+                        <td>Input</td>
+                        <td>XXXX</td>
+                        <td>XXXX</td>
+                    </tr> 
+                    <tr>
+                        <td>Output</td>
+                        <td>XXXX</td>
+                        <td>XXXX</td>
+                    </tr> 
+                    <tr>
+                        <td>Fail</td>
+                        <td>XXXX</td>
+                        <td>XXXX</td>
+                    </tr> 
+                    <tr>
+                        <td>Yield</td>
+                        <td>XXXX</td>
+                        <td>XXXX</td>
+                    </tr> 
+                </tbody>
+            </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     </div>
 </div>
 
@@ -79,6 +136,12 @@
     <script>
         $(document).ready(function () {
             $("#StageDailyYield").addClass("active");
+
+            $("#YieldTable").hide();
+
+
+
+
         });
     </script>
 }
