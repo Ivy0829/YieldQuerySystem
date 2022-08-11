@@ -32,7 +32,7 @@ namespace YieldQuerySystem.Controllers
 
 
 
-            return View();
+            
         }
     }
 }

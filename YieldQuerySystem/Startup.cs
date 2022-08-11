@@ -70,6 +70,10 @@ namespace YieldQuerySystem
                 endpoints.MapControllerRoute(
                     name: "Upload",
                     pattern: "{controller=Import}/{action=Upload}");
+
+                endpoints.MapControllerRoute(
+                name: "YieldQuery",
+                pattern: "{controller=YieldQuery}");
             });
         }
     }

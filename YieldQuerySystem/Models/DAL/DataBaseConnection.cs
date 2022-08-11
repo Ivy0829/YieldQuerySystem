@@ -74,13 +74,15 @@ namespace YieldQuerySystem.Models.DAL
             List <DailyYieldViewModel> vm = new List<DailyYieldViewModel>();
             this._conn.Open();
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("@Plant", "abc", DbType.String, ParameterDirection.Input);
-            parameters.Add("@Cust2Code", "abc", DbType.String, ParameterDirection.Input);
-            parameters.Add("@Cust3Code", "abc", DbType.String, ParameterDirection.Input);
-            parameters.Add("@PKGCode", "abc", DbType.String, ParameterDirection.Input);
-            parameters.Add("@DeviceName", "abc", DbType.String, ParameterDirection.Input);
-            parameters.Add("@StartTime", "abc", DbType.DateTime, ParameterDirection.Input);
-            parameters.Add("@EndTime", "abc", DbType.DateTime, ParameterDirection.Input);
+
+
+            parameters.Add("@Plant", model.Plant, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Cust2Code", model.Cust2Code, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Cust3Code", model.Cust3Code, DbType.String, ParameterDirection.Input);
+            parameters.Add("@PKGCode", model.PKGCode, DbType.String, ParameterDirection.Input);
+            parameters.Add("@DeviceName", model.DeviceName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@StartTime", model.StartTime, DbType.String, ParameterDirection.Input);
+            parameters.Add("@EndTime", model.EndTime, DbType.String, ParameterDirection.Input);
 
             var result = this._conn.Query<DailyYieldViewModel>("[dbo].[SP_DailyYieldByStage", parameters, commandType: CommandType.StoredProcedure);
             vm = result.ToList();

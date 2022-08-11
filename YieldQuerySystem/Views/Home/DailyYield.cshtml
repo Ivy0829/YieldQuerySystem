@@ -1,4 +1,6 @@
-﻿@{
+﻿
+
+@{
     ViewData["Title"] = "Yield Query System";
     @*if (ViewData["Title"] != null)
         {
@@ -50,14 +52,14 @@
                 <b><lebel class="txt">PKG Code:</b>
             </td>
             <td>
-                <input type="text" name="txtPKGCode" style="width: 240px; height: 30px;">
+                <input type="text" id="txtPKGCode" name="txtPKGCode" style="width: 240px; height: 30px;">
             </td>
 
             <td>
                 <b><lebel class="txt">Device Name:</b>
             </td>
             <td>
-                <input type="text" name="txtDevice" style="width: 240px; height: 30px;">
+                <input type="text" id="txtPKGCode" name="txtPKGCode" style="width: 240px; height: 30px;">
             </td>
 
             <td>
@@ -72,39 +74,39 @@
             <button id="buttonQuery" class="button1">Query</button>
         </div>
 
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">Stage Code</th>
-                        <th scope="col">Schedule</th>
-                        <th scope="col">date1</th>
-                        <th scope="col">date2</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <td rowspan="5">2900</td>
-                    <tr>
-                        <td>Input</td>
-                        <td>XXXX</td>
-                        <td>XXXX</td>
-                    </tr> 
-                    <tr>
-                        <td>Output</td>
-                        <td>XXXX</td>
-                        <td>XXXX</td>
-                    </tr> 
-                    <tr>
-                        <td>Fail</td>
-                        <td>XXXX</td>
-                        <td>XXXX</td>
-                    </tr> 
-                    <tr>
-                        <td>Yield</td>
-                        <td>XXXX</td>
-                        <td>XXXX</td>
-                    </tr> 
-                </tbody>
-            </table>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Stage Code</th>
+                    <th scope="col">Schedule</th>
+                    <th scope="col">date1</th>
+                    <th scope="col">date2</th>
+                </tr>
+            </thead>
+            <tbody>
+            <td rowspan="5">2900</td>
+            <tr>
+                <td>Input</td>
+                <td>XXXX</td>
+                <td>XXXX</td>
+            </tr>
+            <tr>
+                <td>Output</td>
+                <td>XXXX</td>
+                <td>XXXX</td>
+            </tr>
+            <tr>
+                <td>Fail</td>
+                <td>XXXX</td>
+                <td>XXXX</td>
+            </tr>
+            <tr>
+                <td>Yield</td>
+                <td>XXXX</td>
+                <td>XXXX</td>
+            </tr>
+            </tbody>
+        </table>
 
 
 
@@ -128,18 +130,82 @@
 
 
 
-        
+
     </div>
 </div>
 
 @section Scripts{
     <script>
         $(document).ready(function () {
+
+            function checkTime()
+            {
+                var datedif = (new Date($("txtDateEnd").val()) - new Date($("txtDateStart").val())) / 1000 / 60 / 60 / 24;
+                if ($("#txtDateStart").val() == '' || $("txtDateEnd").val() == '') {
+                    alert("請輸入時間區間");
+                    return;
+                }
+                else if (datedif > 90)
+                {
+                    alert("請輸入時間區間在三個月(90天)內");
+                    return false;
+                }
+
+                return true;
+
+            }
+
             $("#StageDailyYield").addClass("active");
 
             $("#YieldTable").hide();
 
+            $("#buttonQuery").click(function () {
 
+                if (!checkTime())
+                {
+                    return;
+                }
+
+
+                var QueryCondition =
+                {
+                    Plant: $("#Plant").val(),
+                    Cust2Code: $("#Cust2Code").val(),
+                    Cust3Code: $("#Cust3Code").val(),
+                    PKGCode: $("#txtPKGCode").val(),
+                    DeviceName: $("#txtDeviceName").val(),
+                    StartTime: $("#txtDateStart").val(),
+                    EndTime: $("#txtDateEnd").val(),
+
+
+
+                    }
+
+                $.ajax({
+                    url: '~/YieldQuery/QueryDailyYieldByStage',
+                    type: 'post',
+                    dataType: 'json',
+                    data:QueryCondition,
+                    contentsType: 'acclication/json',
+                    success: function (data) {
+                        //ajax 打出成功要做的事
+                        $("YieldTable").show();
+                    },
+                    error: function (data) {
+                        //ajax 打出失敗要做的事
+                        alert("查詢失敗，請稍後查詢。")
+                    }
+
+
+
+
+
+                });
+
+
+
+
+            });
 
 
         });
