@@ -68,10 +68,10 @@ namespace YieldQuerySystem.Models.DAL
             return result;
         }
         
-        public List<DailyYieldViewModel> QueryDailyYieldByStage(QueryDailyYield model)
+        public List<DailyYieldByStageModel> QueryDailyYieldByStage(QueryDailyYield model)
         {
 
-            List <DailyYieldViewModel> vm = new List<DailyYieldViewModel>();
+            List <DailyYieldByStageModel> vm = new List<DailyYieldByStageModel>();
             this._conn.Open();
             DynamicParameters parameters = new DynamicParameters();
 
@@ -84,8 +84,14 @@ namespace YieldQuerySystem.Models.DAL
             parameters.Add("@StartTime", model.StartTime, DbType.String, ParameterDirection.Input);
             parameters.Add("@EndTime", model.EndTime, DbType.String, ParameterDirection.Input);
 
-            var result = this._conn.Query<DailyYieldViewModel>("[dbo].[SP_DailyYieldByStage", parameters, commandType: CommandType.StoredProcedure);
+            var result = this._conn.Query<DailyYieldByStageModel>("[dbo].[SP_DailyYieldByStage]", parameters, commandType: CommandType.StoredProcedure);
             vm = result.ToList();
+
+            foreach(var item in vm)
+            {
+                item.ShowTime = item.OutTime.ToString("MM/dd");
+            }
+
             return vm;
 
 

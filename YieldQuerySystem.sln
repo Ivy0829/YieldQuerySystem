@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31727.386
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YieldQuerySystem", "YieldQuerySystem\YieldQuerySystem.csproj", "{D8AB12AF-1E90-4812-B94C-DF3C732E3CED}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "YieldReportSyatem", "YieldReportSyatem\YieldReportSyatem.sqlproj", "{D28BBFB1-4D3B-4594-8BF4-506CA7011DE2}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "YieldReportSystem", "YieldReportSyatem\YieldReportSystem.sqlproj", "{D28BBFB1-4D3B-4594-8BF4-506CA7011DE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,5 @@
-﻿
+﻿@using YieldQuerySystem.Models.ViewModel
+@model List<DailyYieldViewModel>
 
 @{
     ViewData["Title"] = "Yield Query System";
@@ -74,85 +75,87 @@
             <button id="buttonQuery" class="button1">Query</button>
         </div>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Stage Code</th>
-                    <th scope="col">Schedule</th>
-                    <th scope="col">date1</th>
-                    <th scope="col">date2</th>
-                </tr>
-            </thead>
-            <tbody>
-            <td rowspan="5">2890</td>
-            <tr>
-                <td>Input</td>
-                <td>47500</td>
-                <td>66500</td>
-            </tr>
-            <tr>
-                <td>Output</td>
-                <td>47500</td>
-                <td>66500</td>
-            </tr>
-            <tr>
-                <td>Fail</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Yield</td>
-                <td>100.00%</td>
-                <td>100.00%</td>
-            </tr>
-            </tbody>
-            <tbody>
-            <td rowspan="5">2930</td>
-            <tr>
-                <td>Input</td>
-                <td>47500</td>
-                <td>66500</td>
-            </tr>
-            <tr>
-                <td>Output</td>
-                <td>47500</td>
-                <td>66500</td>
-            </tr>
-            <tr>
-                <td>Fail</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>Yield</td>
-                <td>100.00%</td>
-                <td>100.00%</td>
-            </tr>
-            </tbody>
-            <tbody>
-            <td rowspan="5">3100</td>
-            <tr>
-                <td>Input</td>
-                <td>38000</td>
-                <td>57000</td>
-            </tr>
-            <tr>
-                <td>Output</td>
-                <td>37992</td>
-                <td>56972</td>
-            </tr>
-            <tr>
-                <td>Fail</td>
-                <td>8</td>
-                <td>28</td>
-            </tr>
-            <tr>
-                <td>Yield</td>
-                <td>99.98%</td>
-                <td>99.95%</td>
-            </tr>
-            </tbody>
-        </table>
+        <table id="queryTable" class="table table-bordered">
+            @*<thead>
+                        <tr>
+                            <th scope="col">Stage Code</th>
+                            <th scope="col">Schedule</th>
+                            <th scope="col">date1</th>
+                            <th scope="col">date2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                    <td rowspan="5">2890</td>
+                    <tr>
+                        <td>Input</td>
+                        <td>47500</td>
+                        <td>66500</td>
+                    </tr>
+                    <tr>
+                        <td>Output</td>
+                        <td>47500</td>
+                        <td>66500</td>
+                    </tr>
+                    <tr>
+                        <td>Fail</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Yield</td>
+                        <td>100.00%</td>
+                        <td>100.00%</td>
+                    </tr>
+                    </tbody>
+                    <tbody>
+                    <td rowspan="5">2930</td>
+                    <tr>
+                        <td>Input</td>
+                        <td>47500</td>
+                        <td>66500</td>
+                    </tr>
+                    <tr>
+                        <td>Output</td>
+                        <td>47500</td>
+                        <td>66500</td>
+                    </tr>
+                    <tr>
+                        <td>Fail</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Yield</td>
+                        <td>100.00%</td>
+                        <td>100.00%</td>
+                    </tr>
+                    </tbody>
+                    <tbody>
+                    <td rowspan="5">3100</td>
+                    <tr>
+                        <td>Input</td>
+                        <td>38000</td>
+                        <td>57000</td>
+                    </tr>
+                    <tr>
+                        <td>Output</td>
+                        <td>37992</td>
+                        <td>56972</td>
+                    </tr>
+                    <tr>
+                        <td>Fail</td>
+                        <td>8</td>
+                        <td>28</td>
+                    </tr>
+                    <tr>
+                        <td>Yield</td>
+                        <td>99.98%</td>
+                        <td>99.95%</td>
+                    </tr>
+                    </tbody>
+                </table>*@
 
 
 
@@ -184,15 +187,15 @@
     <script>
         $(document).ready(function () {
 
-            function checkTime()
-            {
+            var $table = $("#queryTable");
+
+            function checkTime() {
                 var datedif = (new Date($("txtDateEnd").val()) - new Date($("txtDateStart").val())) / 1000 / 60 / 60 / 24;
                 if ($("#txtDateStart").val() == '' || $("txtDateEnd").val() == '') {
                     alert("請輸入時間區間");
                     return;
                 }
-                else if (datedif > 90)
-                {
+                else if (datedif > 90) {
                     alert("請輸入時間區間在三個月(90天)內");
                     return false;
                 }
@@ -206,12 +209,10 @@
             $("#YieldTable").hide();
 
             $("#buttonQuery").click(function () {
-
-                if (!checkTime())
-                {
+                
+                if (!checkTime()) {
                     return;
                 }
-
 
                 var QueryCondition =
                 {
@@ -225,17 +226,100 @@
 
 
 
-                    }
+                }
 
                 $.ajax({
-                    url: '~/YieldQuery/QueryDailyYieldByStage',
+                    url: '/YieldQuery/QueryDailyYieldByStage',
                     type: 'post',
                     dataType: 'json',
-                    data:QueryCondition,
+                    data: QueryCondition,
                     contentsType: 'acclication/json',
                     success: function (data) {
                         //ajax 打出成功要做的事
-                        $("YieldTable").show();
+                        $("#queryTable > thead").remove();
+                        $("#queryTable > tbody").remove();
+
+                        var timeary = [];
+                        data.forEach(function (item) {
+                            item.dailyYield.forEach(function (dailydata) {
+                                timeary.push(dailydata.ShowTime);
+                            })
+                        });
+
+                        const filterary = timeary.filter(function (ele, pos)
+                        {
+                            return timeary.indexOf(ele) == pos;
+                        })
+                        filterary.sort();
+
+                        //add thead
+                        var appendstring = '<th scope="col">Stage Code</td>' + '<th scope="col">Schedule</td>'
+                        filterary.forEach(function (item)
+                        {
+                            appendstring+='<th scope="col">'+item+'</th>'
+                        })
+
+                        $table.append('<thead>').children("thead")
+                            .append('<tr>').children("tr")
+                            .append(appendstring);
+                            //.append('<th scope="col">Stage Code</th>')
+                            //.append('<th scope="col">Schedule</th>')
+                            //.append('<th scope="col">date1</th>')
+                            //.append('<th scope="col">date2</th>');
+                        //add tbody
+                        var $tbody = $table.append('<tBody />').children('tbody');
+                        //add row
+
+                        data.forEach(function (item) {
+                            appendstring = '<tr><td rowspan="5">' + item.StageCode + '</td></tr>'
+                                + '<tr>' + '<td>Input</td>';
+                            item.dailyYield.forEach(function (dailydata)
+                            {
+                                appendstring += '<td>'+dailydata.InQty +'</td>'
+                            })
+                            //appendstring += '</tr>';
+                            //appendstring += '<tr>' + '<td>Input</td>';
+                            //item.dailyYields.forEach(function (dailydata) {
+                            //    appendstring += '<td>' + dailydata.InQty + '</td>'
+                            //})
+                            appendstring += '</tr>';
+                            appendstring += '<tr>' + '<td>Output</td>';
+                            item.dailyYields.forEach(function (dailydata)
+                            {
+                                appendstring += '<td>' + dailydata.OutQty + '</td>'
+                            })
+                            appendstring += '</tr>';
+                            appendstring += '<tr>' + '<td>Fail</td>';
+                            item.dailyYields.forEach(function (dailydata)
+                            {
+                                appendstring += '<td>' + dailydata.DefectQty + '</td>'
+                            })
+                            appendstring += '</tr>';
+                            appendstring += '<tr>' + '<td>Yield</td>';
+                            item.dailyYields.forEach(function (dailydata)
+                            {
+                                appendstring += '<td>' + dailydata.Yield +'</td>'
+                            })
+                            appendstring == '</tr>';
+                        });
+                        $tbody.append(appendstring);
+
+
+
+                        $tbody.append('<td rowspan="5">2890</td>')
+                            .append('<tr>').children('tr:last')
+                            .append('<td>Input</td>')
+                            .append('<td>47500</td>');
+                        $tbody.append('<tr>').children('tr:last')
+                            .append('<td>Output</td>')
+                            .append('<td>47500</td>');
+                        $tbody.append('<tr>').children('tr:last')
+                            .append('<td>Fail</td>')
+                            .append('<td>0</td>');
+                        $tbody.append('<tr>').children('tr:last')
+                            .append('<td>Yield</td>')
+                            .append('<td>100.00%</td>');
+
                     },
                     error: function (data) {
                         //ajax 打出失敗要做的事

@@ -7,17 +7,10 @@ namespace YieldQuerySystem.Models.ViewModel
 {
     public class DailyYieldViewModel
     {
-        string StageCode { get; set; }
+        public string StageCode { get; set; }
 
-        int InQty { get; set; }
-
-        int OutQty { get; set; }
-
-        int DefectQty { get; set; }
-
-        string Yield { get; set; }
-
-        string OutTime { get; set; }
+        public List<string> OutTime { get; set; }
+        public List<DailyYieldByStageModel> dailyYield { get; set; }
 
     }
 }
