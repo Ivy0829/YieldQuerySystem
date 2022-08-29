@@ -40,7 +40,7 @@ namespace YieldQuerySystem.Controllers
                 vm.Add(new DailyYieldViewModel
                 {
                     StageCode = dailydata.Key,
-                    dailyYield = dailydata.ToList()
+                    dailyYields = dailydata.ToList()
                 });
             }
 

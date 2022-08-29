@@ -241,7 +241,7 @@
 
                         var timeary = [];
                         data.forEach(function (item) {
-                            item.dailyYield.forEach(function (dailydata) {
+                            item.dailyYields.forEach(function (dailydata) {
                                 timeary.push(dailydata.ShowTime);
                             })
                         });
@@ -271,54 +271,32 @@
                         //add row
 
                         data.forEach(function (item) {
-                            appendstring = '<tr><td rowspan="5">' + item.StageCode + '</td></tr>'
-                                + '<tr>' + '<td>Input</td>';
-                            item.dailyYield.forEach(function (dailydata)
-                            {
-                                appendstring += '<td>'+dailydata.InQty +'</td>'
+                            appendstring = '<tr><td rowspan="5">' + item.StageCode + '</td>'
+                                + '<tr><td>Input</td>';
+                            item.dailyYields.forEach(function (dailydata) {
+                                appendstring += '<td>' + dailydata.InQty + '</td>'
                             })
-                            //appendstring += '</tr>';
-                            //appendstring += '<tr>' + '<td>Input</td>';
-                            //item.dailyYields.forEach(function (dailydata) {
-                            //    appendstring += '<td>' + dailydata.InQty + '</td>'
-                            //})
                             appendstring += '</tr>';
                             appendstring += '<tr>' + '<td>Output</td>';
-                            item.dailyYields.forEach(function (dailydata)
-                            {
+                            item.dailyYields.forEach(function (dailydata) {
                                 appendstring += '<td>' + dailydata.OutQty + '</td>'
                             })
                             appendstring += '</tr>';
                             appendstring += '<tr>' + '<td>Fail</td>';
-                            item.dailyYields.forEach(function (dailydata)
-                            {
+                            item.dailyYields.forEach(function (dailydata) {
                                 appendstring += '<td>' + dailydata.DefectQty + '</td>'
                             })
                             appendstring += '</tr>';
                             appendstring += '<tr>' + '<td>Yield</td>';
-                            item.dailyYields.forEach(function (dailydata)
-                            {
-                                appendstring += '<td>' + dailydata.Yield +'</td>'
+                            item.dailyYields.forEach(function (dailydata) {
+                                appendstring += '<td>' + dailydata.Yield + '</td>'
                             })
-                            appendstring == '</tr>';
+                            appendstring += '</tr>';
+                            appendstring += '</tr>';
+                            $tbody.append(appendstring);
                         });
-                        $tbody.append(appendstring);
 
 
-
-                        $tbody.append('<td rowspan="5">2890</td>')
-                            .append('<tr>').children('tr:last')
-                            .append('<td>Input</td>')
-                            .append('<td>47500</td>');
-                        $tbody.append('<tr>').children('tr:last')
-                            .append('<td>Output</td>')
-                            .append('<td>47500</td>');
-                        $tbody.append('<tr>').children('tr:last')
-                            .append('<td>Fail</td>')
-                            .append('<td>0</td>');
-                        $tbody.append('<tr>').children('tr:last')
-                            .append('<td>Yield</td>')
-                            .append('<td>100.00%</td>');
 
                     },
                     error: function (data) {

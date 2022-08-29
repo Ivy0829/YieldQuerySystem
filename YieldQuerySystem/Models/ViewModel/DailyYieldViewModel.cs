@@ -10,7 +10,7 @@ namespace YieldQuerySystem.Models.ViewModel
         public string StageCode { get; set; }
 
         public List<string> OutTime { get; set; }
-        public List<DailyYieldByStageModel> dailyYield { get; set; }
+        public List<DailyYieldByStageModel> dailyYields { get; set; }
 
     }
 }
