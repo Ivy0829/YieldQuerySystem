@@ -2,6 +2,7 @@
 @model List<DailyYieldViewModel>
 
 @{
+
     ViewData["Title"] = "Yield Query System";
     @*if (ViewData["Title"] != null)
         {
@@ -75,110 +76,8 @@
             <button id="buttonQuery" class="button1">Query</button>
         </div>
 
-        <table id="queryTable" class="table table-bordered">
-            @*<thead>
-                        <tr>
-                            <th scope="col">Stage Code</th>
-                            <th scope="col">Schedule</th>
-                            <th scope="col">date1</th>
-                            <th scope="col">date2</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-
-                    <td rowspan="5">2890</td>
-                    <tr>
-                        <td>Input</td>
-                        <td>47500</td>
-                        <td>66500</td>
-                    </tr>
-                    <tr>
-                        <td>Output</td>
-                        <td>47500</td>
-                        <td>66500</td>
-                    </tr>
-                    <tr>
-                        <td>Fail</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>Yield</td>
-                        <td>100.00%</td>
-                        <td>100.00%</td>
-                    </tr>
-                    </tbody>
-                    <tbody>
-                    <td rowspan="5">2930</td>
-                    <tr>
-                        <td>Input</td>
-                        <td>47500</td>
-                        <td>66500</td>
-                    </tr>
-                    <tr>
-                        <td>Output</td>
-                        <td>47500</td>
-                        <td>66500</td>
-                    </tr>
-                    <tr>
-                        <td>Fail</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>Yield</td>
-                        <td>100.00%</td>
-                        <td>100.00%</td>
-                    </tr>
-                    </tbody>
-                    <tbody>
-                    <td rowspan="5">3100</td>
-                    <tr>
-                        <td>Input</td>
-                        <td>38000</td>
-                        <td>57000</td>
-                    </tr>
-                    <tr>
-                        <td>Output</td>
-                        <td>37992</td>
-                        <td>56972</td>
-                    </tr>
-                    <tr>
-                        <td>Fail</td>
-                        <td>8</td>
-                        <td>28</td>
-                    </tr>
-                    <tr>
-                        <td>Yield</td>
-                        <td>99.98%</td>
-                        <td>99.95%</td>
-                    </tr>
-                    </tbody>
-                </table>*@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <table id=queryTable class="table table-bordered">
+        </table>
 
     </div>
 </div>
@@ -201,15 +100,67 @@
                 }
 
                 return true;
-
             }
+
+            function mmddformat(StartTime) {
+                StartTime = new Date(StartTime);
+                showmonth = StartTime.getMonth() + 1;
+                showday = StartTime.getDate();
+                if (showmonth.toString().length == 1) {
+                    showmonth = "0" + showmonth;
+                }
+                if (showday.toString().length == 1) {
+                    showday = "0" + showday;
+                }
+                arydate = showmonth + "/" + showday;
+                return arydate;
+            }
+
+            function gettablestring(status, data, timeary, StartTime, EndTime) {
+                var appendstring = '';
+                appendstring += '<tr><td>' + status + '</td>';
+                var _StartTime = new Date(StartTime);
+                var _EndTime = new Date(EndTime);
+                var _timeary = timeary;
+                while (_StartTime <= _EndTime) {
+                    arydate = mmddformat(_StartTime);
+                    if (_timeary.indexOf(arydate) != -1) {
+                        data.dailyYields.forEach(function (dailydata) {
+                            if (dailydata.ShowTime === arydate) {
+                                switch (status) {
+                                    case 'Input':
+                                        appendstring += '<td>' + dailydata.InQty + '</td>';
+                                        break;
+                                    case 'Output':
+                                        appendstring += '<td>' + dailydata.OutQty + '</td>';
+                                        break;
+                                    case 'Fail':
+                                        appendstring += '<td>' + dailydata.DefectQty + '</td>';
+                                        break;
+                                    case 'Yield':
+                                        appendstring += '<td>' + dailydata.Yield + '</td>';
+                                        break;
+                                }
+                            }
+                        })
+                    }
+                    else {
+                        appendstring += '<td>'  + '</td>'
+                    }
+                    _StartTime = _StartTime.setDate(_StartTime.getDate() + 1);
+                    _StartTime = new Date(_StartTime);
+                }
+                appendstring += '</tr>';
+                return appendstring;
+            }
+
 
             $("#StageDailyYield").addClass("active");
 
             $("#YieldTable").hide();
 
             $("#buttonQuery").click(function () {
-                
+
                 if (!checkTime()) {
                     return;
                 }
@@ -223,13 +174,10 @@
                     DeviceName: $("#txtDeviceName").val(),
                     StartTime: $("#txtDateStart").val(),
                     EndTime: $("#txtDateEnd").val(),
-
-
-
                 }
 
                 $.ajax({
-                    url: '/YieldQuery/QueryDailyYieldByStage',
+                    url: '../YieldQuery/QueryDailyYieldByStage',
                     type: 'post',
                     dataType: 'json',
                     data: QueryCondition,
@@ -246,73 +194,44 @@
                             })
                         });
 
-                        const filterary = timeary.filter(function (ele, pos)
-                        {
-                            return timeary.indexOf(ele) == pos;
-                        })
-                        filterary.sort();
+                        var appendstring = '<th scope="col">Stage Code</th>' + '<th scope="col">Schedule</th>'
+                        var StartTime = new Date(QueryCondition.StartTime);
+                        var EndTime = new Date(QueryCondition.EndTime);
 
-                        //add thead
-                        var appendstring = '<th scope="col">Stage Code</td>' + '<th scope="col">Schedule</td>'
-                        filterary.forEach(function (item)
-                        {
-                            appendstring+='<th scope="col">'+item+'</th>'
-                        })
-
+                        while (StartTime <= EndTime) {
+                            appendstring += '<th scope="col">' + mmddformat(StartTime) + '</th>'
+                            StartTime = StartTime.setDate(StartTime.getDate() + 1);
+                            StartTime = new Date(StartTime);
+                        }
                         $table.append('<thead>').children("thead")
-                            .append('<tr>').children("tr")
+                            .append('<tr>').children('tr')
                             .append(appendstring);
-                            //.append('<th scope="col">Stage Code</th>')
-                            //.append('<th scope="col">Schedule</th>')
-                            //.append('<th scope="col">date1</th>')
-                            //.append('<th scope="col">date2</th>');
+
                         //add tbody
-                        var $tbody = $table.append('<tBody />').children('tbody');
+                        var $tbody = $table.append('<tbody />').children('tbody');
                         //add row
 
                         data.forEach(function (item) {
-                            appendstring = '<tr><td rowspan="5">' + item.StageCode + '</td>'
-                                + '<tr><td>Input</td>';
+                            timeary = [];
                             item.dailyYields.forEach(function (dailydata) {
-                                appendstring += '<td>' + dailydata.InQty + '</td>'
+                                timeary.push(dailydata.ShowTime);
                             })
-                            appendstring += '</tr>';
-                            appendstring += '<tr>' + '<td>Output</td>';
-                            item.dailyYields.forEach(function (dailydata) {
-                                appendstring += '<td>' + dailydata.OutQty + '</td>'
-                            })
-                            appendstring += '</tr>';
-                            appendstring += '<tr>' + '<td>Fail</td>';
-                            item.dailyYields.forEach(function (dailydata) {
-                                appendstring += '<td>' + dailydata.DefectQty + '</td>'
-                            })
-                            appendstring += '</tr>';
-                            appendstring += '<tr>' + '<td>Yield</td>';
-                            item.dailyYields.forEach(function (dailydata) {
-                                appendstring += '<td>' + dailydata.Yield + '</td>'
-                            })
+                            appendstring = '<tr><td rowspan="5">' + item.StageCode + '</td>';
+                            appendstring += gettablestring('Input', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
+                            appendstring += gettablestring('Output', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
+                            appendstring += gettablestring('Fail', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
+                            appendstring += gettablestring('Yield', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
+
                             appendstring += '</tr>';
                             appendstring += '</tr>';
                             $tbody.append(appendstring);
                         });
-
-
-
                     },
                     error: function (data) {
                         //ajax 打出失敗要做的事
                         alert("查詢失敗，請稍後查詢。")
                     }
-
-
-
-
-
                 });
-
-
-
-
             });
 
 
@@ -321,4 +240,3 @@
 }
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-
