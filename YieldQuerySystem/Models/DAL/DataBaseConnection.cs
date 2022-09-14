@@ -80,9 +80,10 @@ namespace YieldQuerySystem.Models.DAL
             parameters.Add("@Cust2Code", model.Cust2Code, DbType.String, ParameterDirection.Input);
             parameters.Add("@Cust3Code", model.Cust3Code, DbType.String, ParameterDirection.Input);
             parameters.Add("@PKGCode", model.PKGCode, DbType.String, ParameterDirection.Input);
+            parameters.Add("@StageCode", model.StageCode, DbType.String, ParameterDirection.Input);
             parameters.Add("@DeviceName", model.DeviceName, DbType.String, ParameterDirection.Input);
-            parameters.Add("@StartTime", model.StartTime, DbType.String, ParameterDirection.Input);
-            parameters.Add("@EndTime", model.EndTime, DbType.String, ParameterDirection.Input);
+            parameters.Add("@StartTime", model.StartTime, DbType.DateTime, ParameterDirection.Input);
+            parameters.Add("@EndTime", model.EndTime, DbType.DateTime, ParameterDirection.Input);
 
             var result = this._conn.Query<DailyYieldByStageModel>("[dbo].[SP_DailyYieldByStage]", parameters, commandType: CommandType.StoredProcedure);
             vm = result.ToList();
@@ -97,7 +98,25 @@ namespace YieldQuerySystem.Models.DAL
 
         }
 
+        public DailyYieldSearchViewModel SearchDataforDailyYield()
+        {
+            DailyYieldSearchViewModel vm = new DailyYieldSearchViewModel();
+            List<DailyYieldSearchModel> data = new List<DailyYieldSearchModel>();
+            this._conn.Open();
+            var result = this._conn.Query<DailyYieldSearchModel>("[dbo].[SP_SearchDataforDailyYield]", commandType: CommandType.StoredProcedure);
+           data = result.ToList();
 
+            vm.PlantList = data.Select(x => x.Plant).Distinct().ToList();
+            vm.StageCodeList = data.Select(x => x.StageCode).Distinct().ToList();
+            vm.Cust2CodeList = data.Select(x => x.Cust2Code).Distinct().ToList();
+            vm.Cust3CodeList = data.Select(x => x.Cust3Code).Distinct().ToList();
+            vm.PkgCodeList = data.Select(x => x.PkgCode).Distinct().ToList();
+
+
+            return vm;
+
+
+        }
 
     }
 }

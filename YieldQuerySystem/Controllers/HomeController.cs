@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using YieldQuerySystem.Models;
+using YieldQuerySystem.Models.DAL;
 using YieldQuerySystem.Models.ViewModel;
 
 namespace YieldQuerySystem.Controllers
@@ -42,11 +43,17 @@ namespace YieldQuerySystem.Controllers
         }
         public IActionResult DailyYield()
         {
-            List<DailyYieldViewModel> vm = new List<DailyYieldViewModel>();
+            //List<DailyYieldViewModel> vm = new List<DailyYieldViewModel>();
+            //List<DailyYieldSearchModel> vm = new List<DailyYieldSearchModel>();
+
+            DailyYieldSearchViewModel vm = new DailyYieldSearchViewModel();
+
+            DataBaseConnection db = new DataBaseConnection(this._conn);
+
+            vm = db.SearchDataforDailyYield();
 
 
-
-            return View();
+            return View(vm);
         }
         public IActionResult LowYieldSetting()
         {

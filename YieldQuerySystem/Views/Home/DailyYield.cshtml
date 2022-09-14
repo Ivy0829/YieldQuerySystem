@@ -1,5 +1,5 @@
 ﻿@using YieldQuerySystem.Models.ViewModel
-@model List<DailyYieldViewModel>
+@model DailyYieldSearchViewModel
 
 @{
 
@@ -21,8 +21,12 @@
             <td>
                 <select id="Plant" style="width: 240px; height: 30px;">
                     <option selected></option>
-                    <option value="ASES1">ASES1</option>
-                    <option value="ASES3">ASES3</option>
+                    @*@Html.DropDownListFor(model=>model.PlantList,new SelectList(ModelPlant,Value,Text))*@
+                    @foreach (var item in Model.PlantList)
+                    {
+                        <option value=@item>@item</option>
+
+                    }
                 </select>
             </td>
 
@@ -32,9 +36,11 @@
             <td>
                 <select id="Cust2Code" style="width: 240px; height: 30px;">
                     <option selected></option>
-                    <option value="QM">QM</option>
-                    <option value="UG">UG</option>
-                    <option value="X1">X1</option>
+                    @foreach (var item in Model.Cust2CodeList)
+                    {
+                        <option value=@item>@item</option>
+
+                    }
                 </select>
             </td>
 
@@ -44,9 +50,11 @@
             <td>
                 <select id="Cust3Code" style="width: 240px; height: 30px;">
                     <option selected></option>
-                    <option value="QCM">QCM</option>
-                    <option value="USL">USL</option>
-                    <option value="SPX">SPX</option>
+                    @foreach (var item in Model.Cust3CodeList)
+                    {
+                        <option value=@item>@item</option>
+
+                    }
                 </select>
             </td>
 
@@ -54,14 +62,35 @@
                 <b><lebel class="txt">PKG Code:</b>
             </td>
             <td>
-                <input type="text" id="txtPKGCode" name="txtPKGCode" style="width: 240px; height: 30px;">
+                <select id="PkgCode" style="width: 240px; height: 30px;">
+                    <option selected></option>
+                    @foreach (var item in Model.PkgCodeList)
+                    {
+                        <option value=@item>@item</option>
+
+                    }
+                </select>
+            </td>
+
+            <td>
+                <b><lebel class="txt">StageCode:</b>
+            </td>
+            <td>
+                <select id="StageCode" style="width: 240px; height: 30px;">
+                    <option selected></option>
+                    @foreach (var item in Model.StageCodeList)
+                    {
+                        <option value=@item>@item</option>
+
+                    }
+                </select>
             </td>
 
             <td>
                 <b><lebel class="txt">Device Name:</b>
             </td>
             <td>
-                <input type="text" id="txtPKGCode" name="txtPKGCode" style="width: 240px; height: 30px;">
+                <input type="text" id="txtDeviceName" name="txtDeviceName" style="width: 240px; height: 30px;">
             </td>
 
             <td>
@@ -171,6 +200,7 @@
                     Cust2Code: $("#Cust2Code").val(),
                     Cust3Code: $("#Cust3Code").val(),
                     PKGCode: $("#txtPKGCode").val(),
+                    StageCode: $("#StageCode").val(),
                     DeviceName: $("#txtDeviceName").val(),
                     StartTime: $("#txtDateStart").val(),
                     EndTime: $("#txtDateEnd").val(),

@@ -11,6 +11,7 @@ namespace YieldQuerySystem.Models
         public string Cust2Code { get; set; }
         public string Cust3Code { get; set; }
         public string PKGCode { get; set; }
+        public string StageCode { get; set; }
         public string DeviceName { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
