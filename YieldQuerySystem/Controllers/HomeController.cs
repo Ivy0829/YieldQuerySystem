@@ -39,7 +39,11 @@ namespace YieldQuerySystem.Controllers
         }
         public IActionResult DailyDefect()
         {
-            return View();
+
+            DailyYieldSearchViewModel vm = new DailyYieldSearchViewModel();
+            DataBaseConnection db = new DataBaseConnection(this._conn);
+            vm = db.SearchDataforDailyYield();
+            return View(vm);
         }
         public IActionResult DailyYield()
         {
@@ -47,9 +51,7 @@ namespace YieldQuerySystem.Controllers
             //List<DailyYieldSearchModel> vm = new List<DailyYieldSearchModel>();
 
             DailyYieldSearchViewModel vm = new DailyYieldSearchViewModel();
-
             DataBaseConnection db = new DataBaseConnection(this._conn);
-
             vm = db.SearchDataforDailyYield();
 
 

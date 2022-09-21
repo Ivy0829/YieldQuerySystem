@@ -98,6 +98,30 @@ namespace YieldQuerySystem.Models.DAL
 
         }
 
+        public List<DailyYieldDefectDataModel> QueryDailyYieldDefectData(QueryDailyYield model)
+        {
+
+            List<DailyYieldDefectDataModel> vm = new List<DailyYieldDefectDataModel>();
+            this._conn.Open();
+            DynamicParameters parameters = new DynamicParameters();
+
+            parameters.Add("@Plant", model.Plant, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Cust2Code", model.Cust2Code, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Cust3Code", model.Cust3Code, DbType.String, ParameterDirection.Input);
+            parameters.Add("@PKGCode", model.PKGCode, DbType.String, ParameterDirection.Input);
+            parameters.Add("@StageCode", model.StageCode, DbType.String, ParameterDirection.Input);
+            parameters.Add("@DeviceName", model.DeviceName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@StartTime", model.StartTime, DbType.DateTime, ParameterDirection.Input);
+            parameters.Add("@EndTime", model.EndTime, DbType.DateTime, ParameterDirection.Input);
+
+            var result = this._conn.Query<DailyYieldDefectDataModel>("[dbo].[SP_DailyYieldDefectData]", parameters, commandType: CommandType.StoredProcedure);
+            vm = result.ToList();
+
+            return vm;
+
+
+        }
+
         public DailyYieldSearchViewModel SearchDataforDailyYield()
         {
             DailyYieldSearchViewModel vm = new DailyYieldSearchViewModel();
