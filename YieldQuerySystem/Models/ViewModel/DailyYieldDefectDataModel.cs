@@ -19,8 +19,16 @@ namespace YieldQuerySystem.Models.ViewModel
         public string Yield { get; set; }
         public int SumDefectQty { get; set; }
         public string DefectName { get; set; }
-        public string DefectQty { get; set; }
+        public int DefectQty { get; set; }
 
-   
+        public List<DefectModel> Defects { get; set; } = new List<DefectModel>();
+
     }
+
+    public class DefectModel
+    {
+        public string DefectName { get; set; }
+        public int DefectQty { get; set; }
+    }
+    
 }

@@ -27,15 +27,15 @@ namespace YieldQuerySystem.Controllers
 
             List<DailyYieldViewModel> vm = new List<DailyYieldViewModel>();
             DataBaseConnection data = new DataBaseConnection(this._conn);
-            
+
             List<DailyYieldByStageModel> dailyYields = data.QueryDailyYieldByStage(model);
 
             var dailyYieldByStageModels = from dailydata in dailyYields
-                       group dailydata by dailydata.StageCode into dailydata2
-                       orderby dailydata2.Key
-                       select dailydata2;
+                                          group dailydata by dailydata.StageCode into dailydata2
+                                          orderby dailydata2.Key
+                                          select dailydata2;
 
-            foreach(var dailydata in dailyYieldByStageModels)
+            foreach (var dailydata in dailyYieldByStageModels)
             {
 
                 vm.Add(new DailyYieldViewModel
@@ -44,15 +44,7 @@ namespace YieldQuerySystem.Controllers
                     dailyYields = dailydata.ToList()
                 });
             }
-
-            
-
             return JsonSerializer.Serialize(vm);
-
-
-
-
-            
         }
 
         public string QueryDailyYieldDefectData(QueryDailyYield model)
@@ -63,37 +55,47 @@ namespace YieldQuerySystem.Controllers
             DailyYieldDefectDataViewModel vm = new DailyYieldDefectDataViewModel();
 
             Type myType = typeof(DailyYieldDefectDataModel);
+
             PropertyInfo[] mypropertyInfo = myType.GetProperties();
 
-           foreach(var title in mypropertyInfo)
+            foreach (var title in mypropertyInfo)
             {
                 vm.ShowTitle.Add(title.Name);
             }
 
-            foreach (var title in DefectData.Select (x => x.DefectName).Distinct().ToList())
+            foreach (var title in DefectData.Select(x => x.DefectName).Distinct().ToList())
             {
-
-                vm.ShowTitle.Add(title);
+                if (!String.IsNullOrEmpty(title))
+                {
+                    vm.DefectCode.Add(title);
+                    vm.ShowTitle.Add(title);
+                }
             }
 
-            //foreach (var dailydata in dailyYieldByStageModels)
-            //{
+            foreach (var dedata in DefectData)
+            {
+                if (!vm.ShowDefectData.Any(x => x.SubLotNo == dedata.SubLotNo && x.StageCode == dedata.StageCode))
+                {
+                    vm.ShowDefectData.Add(dedata);
+                }
+            }
 
-            //    vm.Add(new DailyYieldViewModel
-            //    {
-            //        StageCode = dailydata.Key,
-            //        dailyYields = dailydata.ToList()
-            //    });
-            //}
-
+            foreach (var dedata in DefectData)
+            {
+                if (vm.ShowDefectData.Any(x => x.SubLotNo == dedata.SubLotNo && x.StageCode == dedata.StageCode))
+                {
+                    if (!(dedata.DefectName is null || dedata.DefectQty == 0))
+                    {
+                        vm.ShowDefectData.Where(x => x.SubLotNo == dedata.SubLotNo && x.StageCode == dedata.StageCode).FirstOrDefault().
+                            Defects.Add(new DefectModel { DefectName = dedata.DefectName, DefectQty = dedata.DefectQty });
+                    }
+                }
+            }
 
 
             return JsonSerializer.Serialize(vm);
-
-
-
-
-
         }
+
+
     }
 }

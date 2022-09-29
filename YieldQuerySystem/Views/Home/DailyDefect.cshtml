@@ -5,7 +5,7 @@
     ViewData["Title"] = "Yield Query System";
     if (ViewData["Title"] != null)
     {
-        <script>alert(ViewData["Massage"])</script>
+        //<script>alert(ViewData["Massage"])</script>
 
     }
 }
@@ -14,15 +14,14 @@
     <div class="intro">
 
         <partial name="_DailyYieldSearchBar" model="Model" />
+
         <table id=queryTable class="table table-bordered">
         </table>
-
 
     </div>
 </div>
 
 @section Scripts{
-
     <script>
         $(document).ready(function () {
 
@@ -38,7 +37,6 @@
                     alert("請輸入時間區間在三個月(90天)內");
                     return false;
                 }
-
                 return true;
             }
 
@@ -79,13 +77,70 @@
                 }
 
                 $.ajax({
-                    url: '../YieldQuery/QueryDailyYieldByStage',
+                    url: '../YieldQuery/QueryDailyYieldDefectData',
                     type: 'post',
                     dataType: 'json',
                     data: QueryCondition,
                     contentsType: 'acclication/json',
                     success: function (data) {
-                    
+
+                        $("#queryTable > thead").remove();
+                        $("#queryTable > tbody").remove();
+
+                        var appendstring = "";
+
+                        data.ShowTitle.forEach(function (item) {
+                            if (!(item === 'DefectName' || item === 'DefectQty' || item === 'Defects'))
+                                appendstring += '<th scope="col">' + item + '</th>';
+                        });
+                        //add thead
+                        $table.append('<thead>').children("thead")
+                            .append('<tr>').children('tr')
+                            .append(appendstring);
+
+                        //add tbody
+                        var $tbody = $table.append('<tbody />').children('tbody');
+                        //add row
+
+                        data.ShowDefectData.forEach(function (item) {
+                            appendstring = "";
+                            appendstring += '<tr>';
+                            data.ShowTitle.forEach(function (titleitem) {
+                                if (titleitem === 'TrackInTime' || titleitem === 'TrackOutTime') {
+                                    appendstring += '<td>' + mmddformat(item[titleitem]) + '</td>';
+                                }
+                                else if ($.inArray(titleitem, data.DefectCode) != -1) {
+                                    if (item.Defects.length>0)
+                                    {
+                                        var FindFlag=false;
+                                        item.Defects.forEach(function (DefectCode) {
+                                            if (DefectCode.DefectName === titleitem) {
+                                                appendstring += '<td>' + DefectCode.DefectQty + '</td>';
+                                                FindFlag=true;
+                                            }
+                                        });
+                                        if (!FindFlag)
+                                        {
+                                            appendstring += '<td>' + '' + '</td>';
+                                        }
+                                    }
+                                    else
+                                    {
+                                        appendstring += '<td>' + '' + '</td>';
+                                    }
+                                }
+                                else if (!(titleitem === 'DefectName' || titleitem === 'DefectQty' || titleitem === 'Defects')) {
+                                    appendstring += '<td>' + item[titleitem] + '</td>';
+                                }
+                                else
+                                {
+                                }
+
+                            });
+                            appendstring += '</tr>';
+                            $tbody.append(appendstring);
+                        });
+
                     },
                     error: function (data) {
                         //ajax 打出失敗要做的事
@@ -93,13 +148,11 @@
                     }
                 });
             });
-
-
         });
     </script>
-    
+
 }
 
-<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 

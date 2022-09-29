@@ -14,7 +14,7 @@
 <div class="interface">
     <div class="intro">
         <partial name="_DailyYieldSearchBar" model="Model" />
-   
+
         <table id=queryTable class="table table-bordered">
         </table>
 
@@ -114,6 +114,7 @@
                     DeviceName: $("#txtDeviceName").val(),
                     StartTime: $("#txtDateStart").val(),
                     EndTime: $("#txtDateEnd").val(),
+                    
                 }
 
                 $.ajax({
@@ -152,6 +153,7 @@
                         //add row
 
                         data.forEach(function (item) {
+                            appendstring = "";
                             timeary = [];
                             item.dailyYields.forEach(function (dailydata) {
                                 timeary.push(dailydata.ShowTime);
@@ -173,8 +175,6 @@
                     }
                 });
             });
-
-
         });
     </script>
 }
