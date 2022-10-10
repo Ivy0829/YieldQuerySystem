@@ -1,9 +1,9 @@
 ﻿-- =============================================
 -- Author:		<Ivy>
--- Create date: <2022/07/21>
--- Description:	<Daily Yield by Stage Data>
+-- Create date: <2022/09/21>
+-- Description:	<Daily Yield Defect number Data>
 -- =============================================
-CREATE PROCEDURE [dbo].[SP_DailyYieldByStage]
+Create PROCEDURE [dbo].[SP_DailyYieldDefectData]
 	-- Add the parameters for the stored procedure here
 	(
 	@Plant varchar(5),
@@ -22,10 +22,11 @@ BEGIN
 	SET NOCOUNT ON;
 
 
+select dy.SubLotNo,dy.LotNo,Cust2Code,dy.Device,dy.StageCode,dy.TrackInTime,dy.TrackOutTime,dy.TrackInQty,dy.TrackOutQty,dy.Yield,dy.SumDefectQty,dyd.DefectName,dyd.DefectQty
+from [YieldReportSystem].[dbo].[DailyYield] as dy
+left join  [YieldReportSystem].[dbo].[DailyYieldDetail] as dyd on dy.Guid=dyd.Guid
 
 
-	SELECT StageCode,sum(TrackInQty) as InQty, sum(TrackOutQty) as OutQty,sum(TrackInQty)-sum(TrackOutQty) as DefectQty,Convert(varchar,CONVERT(decimal(18,4),sum(TrackOutQty)*1.0/sum(TrackInQty)*100))+ '%' as Yield,CONVERT(varchar(100),TrackOutTime,111) as OutTime  
-FROM DailyYield as dy
 where TrackOutTime between @StartTime and DATEADD(DAY, 1, @EndTime)
 	and (dy.Plant = @Plant or @Plant is null)
 	and (dy.Cust2Code = @Cust2Code or @Cust2Code  is null)
@@ -34,7 +35,7 @@ where TrackOutTime between @StartTime and DATEADD(DAY, 1, @EndTime)
 	and (dy.StageCode = @StageCode or @StageCode is null)
 	and (dy.Device = @DeviceName or @DeviceName is null)
 
-group by StageCode,CONVERT(varchar(100),TrackOutTime,111)
-order by OutTime
+
+order by dy.TrackOutTime
 
 END

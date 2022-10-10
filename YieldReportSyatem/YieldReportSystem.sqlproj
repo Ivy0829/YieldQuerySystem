@@ -65,5 +65,7 @@
     <Build Include="dbo\Tables\DailyYieldDetail.sql" />
     <Build Include="dbo\Tables\DailyYield.sql" />
     <Build Include="dbo\Stored Procedures\SP_DailyYieldByStage.sql" />
+    <Build Include="dbo\Stored Procedures\SP_SearchDataforDailyYield.sql" />
+    <Build Include="dbo\Stored Procedures\SP_DailyYieldDefectData.sql" />
   </ItemGroup>
 </Project>
