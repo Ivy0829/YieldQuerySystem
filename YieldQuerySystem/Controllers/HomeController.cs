@@ -27,9 +27,20 @@ namespace YieldQuerySystem.Controllers
             this._conn = conn;
         }
 
+        //public IActionResult YieldSearchView()
+        //{
+        //    DailyYieldSearchViewModel vm = new DailyYieldSearchViewModel();
+        //    DataBaseConnection db = new DataBaseConnection(this._conn);
+        //    vm = db.SearchDataforDailyYield();
+        //    return View(vm);
+        //}
+
         public IActionResult CloseYieldbyDay()
         {
-            return View();
+            DailyYieldSearchViewModel vm = new DailyYieldSearchViewModel();
+            DataBaseConnection db = new DataBaseConnection(this._conn);
+            vm = db.SearchDataforDailyYield();
+            return View(vm);
         }
 
 

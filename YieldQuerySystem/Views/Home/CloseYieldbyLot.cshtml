@@ -1,4 +1,6 @@
-﻿@{
+﻿@using YieldQuerySystem.Models.ViewModel
+@model DailyYieldSearchViewModel
+@{
     ViewData["Title"] = "Yield Query System";
     @*if (ViewData["Title"] != null)
         {
@@ -9,69 +11,10 @@
 
 <div class="interface">
     <div class="intro">
-        <div class="top-area">
-            @*@using (Html.BeginForm("Upload", "Import", FormMethod.Post, new {enctype="multipart/form-data"}))*@
-            <td>
-                <b><lebel class="txt">Plant:</b>
-            </td>
-            <td>
-                <select id="Plant" style="width: 240px; height: 30px;">
-                    <option selected></option>
-                    <option value="ASES1">ASES1</option>
-                    <option value="ASES3">ASES3</option>
-                </select>
-            </td>
-
-            <td>
-                <b><lebel class="txt">Cust2Code:</b>
-            </td>
-            <td>
-                <select id="Cust2Code" style="width: 240px; height: 30px;">
-                    <option selected></option>
-                    <option value="QM">QM</option>
-                    <option value="UG">UG</option>
-                    <option value="X1">X1</option>
-                </select>
-            </td>
-
-            <td>
-                <b><lebel class="txt">Cust3Code:</b>
-            </td>
-            <td>
-                <select id="Cust3Code" style="width: 240px; height: 30px;">
-                    <option selected></option>
-                    <option value="QCM">QCM</option>
-                    <option value="USL">USL</option>
-                    <option value="SPX">SPX</option>
-                </select>
-            </td>
-
-            <td>
-                <b><lebel class="txt">PKG Code:</b>
-            </td>
-            <td>
-                <input type="text" name="txtPKGCode" style="width: 240px; height: 30px;">
-            </td>
-
-            <td>
-                <b><lebel class="txt">Device Name:</b>
-            </td>
-            <td>
-                <input type="text" name="txtDevice" style="width: 240px; height: 30px;">
-            </td>
-
-            <td>
-                <b><lebel class="txt">Date:</lebel></b>
-            </td>
-            <td>
-                <input id="txtDateStart" class="from-control hasDatepicker" type="date" style="width: 240px; height: 30px;">
-                <span class="txt"> to </span>
-                <input id="txtDateEnd" class="from-control hasDatepicker" type="date" style="width: 240px; height: 30px;">
-            </td>
-
-            <button id="buttonQuery" class="button1">Query</button>
-
-        </div>
+        <partial name="_DailyYieldSearchBar" model="Model" />
+        <div id="ChartJS class=" contenteditable="table table-bordered"></div>
+        <table id=queryTable class="table table-bordered">
+        </table>
     </div>
 </div>
 
@@ -79,6 +22,158 @@
     <script>
         $(document).ready(function () {
             $("#CloseYield").addClass("active");
+            var $table = $("#queryTable");
+
+            function checkTime() {
+                var datedif = (new Date($("txtDateEnd").val()) - new Date($("txtDateStart").val())) / 1000 / 60 / 60 / 24;
+                if ($("#txtDateStart").val() == '' || $("txtDateEnd").val() == '') {
+                    alert("請輸入時間區間");
+                    return;
+                }
+                else if (datedif > 90) {
+                    alert("請輸入時間區間在三個月(90天)內");
+                    return false;
+                }
+
+                return true;
+            }
+
+            function mmddformat(StartTime) {
+                StartTime = new Date(StartTime);
+                showmonth = StartTime.getMonth() + 1;
+                showday = StartTime.getDate();
+                if (showmonth.toString().length == 1) {
+                    showmonth = "0" + showmonth;
+                }
+                if (showday.toString().length == 1) {
+                    showday = "0" + showday;
+                }
+                arydate = showmonth + "/" + showday;
+                return arydate;
+            }
+
+            function gettablestring(status, data, timeary, StartTime, EndTime) {
+                var appendstring = '';
+                appendstring += '<tr><td>' + status + '</td>';
+                var _StartTime = new Date(StartTime);
+                var _EndTime = new Date(EndTime);
+                var _timeary = timeary;
+                while (_StartTime <= _EndTime) {
+                    arydate = mmddformat(_StartTime);
+                    if (_timeary.indexOf(arydate) != -1) {
+                        data.dailyYields.forEach(function (dailydata) {
+                            if (dailydata.ShowTime === arydate) {
+                                switch (status) {
+                                    case 'Input':
+                                        appendstring += '<td>' + dailydata.InQty + '</td>';
+                                        break;
+                                    case 'Output':
+                                        appendstring += '<td>' + dailydata.OutQty + '</td>';
+                                        break;
+                                    case 'Fail':
+                                        appendstring += '<td>' + dailydata.DefectQty + '</td>';
+                                        break;
+                                    case 'Yield':
+                                        appendstring += '<td>' + dailydata.Yield + '</td>';
+                                        break;
+                                }
+                            }
+                        })
+                    }
+                    else {
+                        appendstring += '<td>' + '</td>'
+                    }
+                    _StartTime = _StartTime.setDate(_StartTime.getDate() + 1);
+                    _StartTime = new Date(_StartTime);
+                }
+                appendstring += '</tr>';
+                return appendstring;
+            }
+
+
+            $("#StageDailyYield").addClass("active");
+
+            $("#YieldTable").hide();
+
+            $("#buttonQuery").click(function () {
+
+                if (!checkTime()) {
+                    return;
+                }
+
+                var QueryCondition =
+                {
+                    Plant: $("#Plant").val(),
+                    Cust2Code: $("#Cust2Code").val(),
+                    Cust3Code: $("#Cust3Code").val(),
+                    PKGCode: $("#txtPKGCode").val(),
+                    StageCode: $("#StageCode").val(),
+                    DeviceName: $("#txtDeviceName").val(),
+                    StartTime: $("#txtDateStart").val(),
+                    EndTime: $("#txtDateEnd").val(),
+
+                }
+
+
+
+                $.ajax({
+                    url: '../YieldQuery/QueryCloseYieldByLot',
+                    type: 'post',
+                    dataType: 'json',
+                    data: QueryCondition,
+                    contentsType: 'acclication/json',
+                    success: function (data) {
+                        //ajax 打出成功要做的事
+                        $("#queryTable > thead").remove();
+                        $("#queryTable > tbody").remove();
+
+                        var timeary = [];
+                        data.forEach(function (item) {
+                            item.dailyYields.forEach(function (dailydata) {
+                                timeary.push(dailydata.ShowTime);
+                            })
+                        });
+
+                        var appendstring = '<th scope="col">Stage Code</th>' + '<th scope="col">Schedule</th>'
+                        var StartTime = new Date(QueryCondition.StartTime);
+                        var EndTime = new Date(QueryCondition.EndTime);
+
+                        while (StartTime <= EndTime) {
+                            appendstring += '<th scope="col">' + mmddformat(StartTime) + '</th>'
+                            StartTime = StartTime.setDate(StartTime.getDate() + 1);
+                            StartTime = new Date(StartTime);
+                        }
+                        $table.append('<thead>').children("thead")
+                            .append('<tr>').children('tr')
+                            .append(appendstring);
+
+                        //add tbody
+                        var $tbody = $table.append('<tbody />').children('tbody');
+                        //add row
+
+                        data.forEach(function (item) {
+                            appendstring = "";
+                            timeary = [];
+                            item.dailyYields.forEach(function (dailydata) {
+                                timeary.push(dailydata.ShowTime);
+                            })
+                            appendstring = '<tr><td rowspan="5">' + item.StageCode + '</td>';
+                            appendstring += gettablestring('Input', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
+                            appendstring += gettablestring('Output', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
+                            appendstring += gettablestring('Fail', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
+                            appendstring += gettablestring('Yield', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
+
+                            appendstring += '</tr>';
+                            appendstring += '</tr>';
+                            $tbody.append(appendstring);
+                        });
+                    },
+                    error: function (data) {
+                        //ajax 打出失敗要做的事
+                        alert("查詢失敗，請稍後查詢。")
+                    }
+                });
+            });
         });
     </script>
 }

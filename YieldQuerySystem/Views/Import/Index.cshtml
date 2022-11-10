@@ -2,7 +2,7 @@
     ViewData["Title"] = "Yield Query System";
     if (ViewData["Title"] != null)
     {
-        <script>alert(ViewData["Massage"])</script>
+      
 
     }
 }
@@ -66,35 +66,38 @@
     <div class="form-group col-sm">
         <div class="area">
             <form action="./UploadDailyRawData" enctype="multipart/form-data" method="post">
+            @*<form>*@
                 <b><p><label style="background-color: #00ff21; width: 240px; height: 30px; font-family: Calibri; font-size: 20px ">Daily Raw-Data</label></p></b>
                 @*<br></br>*@
-                <p><input type="file" class="form-control" name="file" /></p>
+                <p><input type="file" id="RawDataFile" class="form-control" name="file" /></p>
                 @*<br></br>*@
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="button" id="RawDataUpdate" class="btn btn-primary">Upload</button>
             </form>
         </div>
     </div>
 
     <div class="form-group col-sm">
         <div class="area2">
-            <form action="./Upload" enctype="multipart/form-data" method="post">
+            <form action="./UploadCloseYieldByLotData" enctype="multipart/form-data" method="post">
+                @*<form>*@
                 <b><p><label style="background-color: #0094ff; width: 240px; height: 30px; font-family: Calibri; font-size: 20px ">Close Yield by Lot</label></p></b>
                 @*<br></br>*@
-                <p><input type="file" class="form-control" name="file" /></p>
+                <p><input type="file" id="CloseYieldByLotData" class="form-control" name="file" /></p>
                 @*<br></br>*@
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="button" id="CloseYieldByLotDataUpdate" class="btn btn-primary">Upload</button>
             </form>
         </div>
     </div>
 
     <div class="form-group col-sm">
         <div class="area3">
-            <form action="./Upload" enctype="multipart/form-data" method="post">
+            <form action="./UploadCloseYieldDefectData" enctype="multipart/form-data" method="post">
+                @*<form>*@
                 <b><p><label style="background-color: #faf519; width: 240px; height: 30px; font-family: Calibri; font-size: 20px ">Close Yield by Defect</label></p></b>
                 @*<br></br>*@
-                <p><input type="file" class="form-control" name="file" /></p>
+                <p><input type="file" id="CloseYieldDefectData" class="form-control" name="file" /></p>
                 @*<br></br>*@
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="button" id="CloseYieldDefectDataUpdate" class="btn btn-primary">Upload</button>
             </form>
         </div>
     </div>
@@ -107,9 +110,49 @@
 
 @section Scripts{
     <script>
+
+        function uploaddata(obj, url)
+        {
+            var formdata = obj.get(0).files[0];
+            var formdata = new FormData();
+            formdata.append = new FormData();
+            $.ajax({
+                url: url,
+                type: 'post',
+                /*dataType: 'file',*/
+                data: { file: formdata },
+                processData: false,
+                contentType: false,
+                success: function(data){
+                    alert("上傳成功");
+                },
+                error: function (data) {
+                    //ajax打出失敗要做的事
+                    alert("上傳失敗")
+                }
+            })
+        }
+
+
         $(document).ready(function () {
             $("#ImportData").addClass("active");
+
+            $("#RawDataUpdate").click(function ()
+            {
+                uploaddata($("#RawDataFile"), './UploadDailyRawData')
+                
+            })
+            $("#CloseYieldByLotDataUpdate").click(function () {
+                uploaddata($("#CloseYieldByLotData"), './UploadCloseYieldByLotData')
+
+            })
+            $("#CloseYieldDefectDataUpdate").click(function () {
+                uploaddata($("#CloseYieldDefectData"), './UploadCloseYieldDefectData')
+
+            })
+
         });
+
     </script>
 }
 
