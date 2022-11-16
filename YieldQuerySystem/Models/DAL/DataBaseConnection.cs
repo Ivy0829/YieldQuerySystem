@@ -76,7 +76,7 @@ namespace YieldQuerySystem.Models.DAL
             {
                 try
                 {
-                    var sql = @"INSERT INTO [dbo].[CloseYield] +
+                    var sql = @"INSERT INTO [dbo].[CloseYield]
                 ([Fac],[Cust],[Pkg],[LC],[Device],[LotNo],[YearCode],[QtyIssue],[QtyAssyLoss],[QtyAssyIn]
                 ,[QtyNonAssyLoss],[DieDiscrepency],[QtyOut],[OverAllYield],[AssyYield],[CloseDT])
                 VALUES
@@ -96,7 +96,37 @@ namespace YieldQuerySystem.Models.DAL
             return result;
         }
 
-            public List<DailyYieldByStageModel> QueryDailyYieldByStage(QueryDailyYield model)
+
+        public bool InsertCloseYieldDefectData(List<CloseYieldDetailModel> DataList)
+        {
+            bool result = false;
+            this._conn.Open();
+            using (var tran = this._conn.BeginTransaction())
+            {
+                try
+                {
+                    var sql = @"INSERT INTO [dbo].[CloseYieldDetail]
+                ([LotNo],[YearCode],[SubLotNo],[StageCode],[LossCode],[LossQty],[TranDT],[OP],[MachID],[Cust],[Pkg],[LC],[Device])
+                VALUES
+                (@LotNo,@YearCode,@SubLotNo,@StageCode,@LossCode,@LossQty,@TranDT,@OP,@MachID,@Cust,@Pkg,@LC,@Device)";
+
+                    this._conn.Execute(sql, DataList, tran);
+                    tran.Commit();
+                    result = true;
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+            return result;
+        }
+
+
+
+
+        public List<DailyYieldByStageModel> QueryDailyYieldByStage(QueryDailyYield model)
         {
 
             List <DailyYieldByStageModel> vm = new List<DailyYieldByStageModel>();

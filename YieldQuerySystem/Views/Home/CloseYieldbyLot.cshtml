@@ -12,7 +12,7 @@
 <div class="interface">
     <div class="intro">
         <partial name="_DailyYieldSearchBar" model="Model" />
-        <div id="ChartJS class=" contenteditable="table table-bordered"></div>
+        <canvas id="ChartJS"></canvas>
         <table id=queryTable class="table table-bordered">
         </table>
     </div>
@@ -91,7 +91,7 @@
             }
 
 
-            $("#StageDailyYield").addClass("active");
+    
 
             $("#YieldTable").hide();
 
@@ -174,10 +174,54 @@
                     }
                 });
             });
+
+            const ctx = $("#ChartJS");
+
+            new Chart(ctx, {
+                /*type: 'bar',*/
+                data: {
+                    labels: ['Cum', ' ', '31U7YF', '31U7AT', '31U7YD', '31U7YE', '32U7AE'],
+                    datasets: [{
+                        type:'line',
+                        /*label: '# of Votes',*/
+                        data: [99.70,0,99.72,99.82,99.78,99.75,99.76],
+                        /*borderWidth:1*/
+                    }]
+                },
+                options: {
+                    scales:
+                    {
+                        y:
+                        {
+                            beginAtZero: true,
+                            ticks: {
+                                min: 0,
+                                max: 100,
+                                callback: function (value) {
+                                    return value + "%"
+                                }
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString:"Persentage"
+                            }
+                        },
+                    },
+                    plugins: {
+                        legend:
+                        {
+                            display:false
+                        }
+                    }                    
+                }   
+            })
+
+
         });
     </script>
 }
 
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

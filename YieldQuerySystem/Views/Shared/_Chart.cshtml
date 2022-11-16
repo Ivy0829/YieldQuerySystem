@@ -1,0 +1,33 @@
+﻿<canvas id="mychart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+
+
+
+<script>
+    var ctx = document.getElementById("mychart") // in JQuery $(#"mychart")
+    mychart = new Chart(ctx, {
+
+        type: "doughnut", //圖表類型
+        data:
+        {
+            labels: ['test1', 'test2', 'test3'], //標題
+            dataset: [{
+                label: "# MyLabel",
+                data: [20, 16, 32],
+                backgroundColor:["Blue","Pink","Gray"],
+
+            }]
+        }
+    })
+
+
+
+
+
+
+
+
+
+
+</script>
