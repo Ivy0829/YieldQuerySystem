@@ -22,6 +22,9 @@
     <script>
         $(document).ready(function () {
             $("#CloseYield").addClass("active");
+
+            $(".TDCust3Code").hide();
+
             var $table = $("#queryTable");
 
             function checkTime() {
@@ -105,7 +108,6 @@
                 {
                     Plant: $("#Plant").val(),
                     Cust2Code: $("#Cust2Code").val(),
-                    Cust3Code: $("#Cust3Code").val(),
                     PKGCode: $("#txtPKGCode").val(),
                     StageCode: $("#StageCode").val(),
                     DeviceName: $("#txtDeviceName").val(),
@@ -117,7 +119,7 @@
 
 
                 $.ajax({
-                    url: '../YieldQuery/QueryCloseYieldByLot',
+                    url: '../CloseYieldQuery/QueryCloseYieldByLot',
                     type: 'post',
                     dataType: 'json',
                     data: QueryCondition,

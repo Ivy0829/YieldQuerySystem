@@ -74,6 +74,10 @@ namespace YieldQuerySystem
                 endpoints.MapControllerRoute(
                 name: "YieldQuery",
                 pattern: "{controller=YieldQuery}");
+
+                endpoints.MapControllerRoute(
+                name: "CloseYieldQuery",
+                pattern: "{controller=CloseYieldQuery}");
             });
         }
     }
