@@ -27,6 +27,9 @@
 
             var $table = $("#queryTable");
 
+            var sumOverAllYield;
+            var myLinChart;
+
             function checkTime() {
                 var datedif = (new Date($("txtDateEnd").val()) - new Date($("txtDateStart").val())) / 1000 / 60 / 60 / 24;
                 if ($("#txtDateStart").val() == '' || $("txtDateEnd").val() == '') {
@@ -55,44 +58,106 @@
                 return arydate;
             }
 
-            function gettablestring(status, data, timeary, StartTime, EndTime) {
-                var appendstring = '';
-                appendstring += '<tr><td>' + status + '</td>';
-                var _StartTime = new Date(StartTime);
-                var _EndTime = new Date(EndTime);
-                var _timeary = timeary;
-                while (_StartTime <= _EndTime) {
-                    arydate = mmddformat(_StartTime);
-                    if (_timeary.indexOf(arydate) != -1) {
-                        data.dailyYields.forEach(function (dailydata) {
-                            if (dailydata.ShowTime === arydate) {
-                                switch (status) {
-                                    case 'Input':
-                                        appendstring += '<td>' + dailydata.InQty + '</td>';
-                                        break;
-                                    case 'Output':
-                                        appendstring += '<td>' + dailydata.OutQty + '</td>';
-                                        break;
-                                    case 'Fail':
-                                        appendstring += '<td>' + dailydata.DefectQty + '</td>';
-                                        break;
-                                    case 'Yield':
-                                        appendstring += '<td>' + dailydata.Yield + '</td>';
-                                        break;
-                                }
-                            }
-                        })
-                    }
-                    else {
-                        appendstring += '<td>' + '</td>'
-                    }
-                    _StartTime = _StartTime.setDate(_StartTime.getDate() + 1);
-                    _StartTime = new Date(_StartTime);
-                }
-                appendstring += '</tr>';
+            function gettablestring(data) {
+
+                appendstring = '<tr>'
+                appendstring += '<td>Schedule</td>' + '<td>Cum</td>'
+                var sumQtyIssue = 0, sumQtyOut = 0, sumLossQty = 0;
+                data.forEach(function (item) {
+                    //順便先算完
+                    sumQtyIssue += item.QtyIssue;
+                    sumQtyOut += item.QtyOut;
+                    sumLossQty += item.LossQty;
+                    appendstring += '<td>' + item.LotNo + '</td>'
+                    
+                });
+
+                sumOverAllYield = Math.round(sumQtyOut / sumQtyIssue*100000)/1000;
+
+                appendstring += '</tr>'
+                appendstring += "<tr>";
+                appendstring += "<td>Assy Input qty</td>"
+                appendstring += "<td>" + sumQtyIssue + "</td>";
+                data.forEach(function (item) {
+                    appendstring += '<td>' + item.QtyIssue + '</td>'
+                });
+
+                appendstring += "<tr>";
+                appendstring += "<td>Assy Output qty</td>"
+                appendstring += "<td>" + sumQtyOut + "</td>";
+                data.forEach(function (item) {
+                    appendstring += '<td>' + item.QtyOut + '</td>'
+                });
+
+                appendstring += "<tr>";
+                appendstring += "<td>Yield</td>"
+                appendstring += "<td>" + sumOverAllYield + "%" +"</td>";
+                data.forEach(function (item) {
+                    appendstring += '<td>' + item.OverAllYield + "%" + '</td>'
+                });
+
+                appendstring += "<tr>";
+                appendstring += "<td>Loss Qty</td>"
+                appendstring += "<td>" + sumLossQty + "</td>";
+                data.forEach(function (item) {
+                    appendstring += '<td>' + item.LossQty + '</td>'
+                });
+
                 return appendstring;
             }
 
+            function DrawLineChart(data)
+            {
+                const ctx = $("#ChartJS");
+                if (myLinChart) {
+                    myLineChart.destroy();
+                }
+                
+                var chartLabels = ['Cum'];
+                var chartOverAllYield = [sumOverAllYield];
+                data.forEach(function (item) {
+                    chartLabels.push(item.LotNo);
+                    chartOverAllYield.push(item.OverAllYield)
+                });
+
+                myLinChart=new Chart(ctx, {
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            type: 'line',
+                            /*label: '# of Votes',*/
+                            data: chartOverAllYield,
+                            /*borderWidth:1*/
+                        }]
+                    },
+                    options: {
+                        scales:
+                        {
+                            y:
+                            {
+                                beginAtZero: true,
+                                ticks: {
+                                    min: 0,
+                                    max: 100,
+                                    callback: function (value) {
+                                        return value + "%"
+                                    }
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Persentage"
+                                }
+                            },
+                        },
+                        plugins: {
+                            legend:
+                            {
+                                display: false
+                            }
+                        }
+                    }
+                })
+            }
 
     
 
@@ -129,22 +194,14 @@
                         $("#queryTable > thead").remove();
                         $("#queryTable > tbody").remove();
 
-                        var timeary = [];
-                        data.forEach(function (item) {
-                            item.dailyYields.forEach(function (dailydata) {
-                                timeary.push(dailydata.ShowTime);
-                            })
+                        var appendstring = '<th scope="col">Date</th>' + '<th scope="col">Date</th>'
+
+                        data.sort(function (a, b) { return a.CloseDT - b.CloseDT });
+
+                        data.forEach(function (item){
+                            appendstring += '<th scope="col">' + mmddformat(item.CloseDT) + '</th>'
                         });
 
-                        var appendstring = '<th scope="col">Stage Code</th>' + '<th scope="col">Schedule</th>'
-                        var StartTime = new Date(QueryCondition.StartTime);
-                        var EndTime = new Date(QueryCondition.EndTime);
-
-                        while (StartTime <= EndTime) {
-                            appendstring += '<th scope="col">' + mmddformat(StartTime) + '</th>'
-                            StartTime = StartTime.setDate(StartTime.getDate() + 1);
-                            StartTime = new Date(StartTime);
-                        }
                         $table.append('<thead>').children("thead")
                             .append('<tr>').children('tr')
                             .append(appendstring);
@@ -152,23 +209,10 @@
                         //add tbody
                         var $tbody = $table.append('<tbody />').children('tbody');
                         //add row
+                        appendstring = gettablestring(data);
 
-                        data.forEach(function (item) {
-                            appendstring = "";
-                            timeary = [];
-                            item.dailyYields.forEach(function (dailydata) {
-                                timeary.push(dailydata.ShowTime);
-                            })
-                            appendstring = '<tr><td rowspan="5">' + item.StageCode + '</td>';
-                            appendstring += gettablestring('Input', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
-                            appendstring += gettablestring('Output', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
-                            appendstring += gettablestring('Fail', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
-                            appendstring += gettablestring('Yield', item, timeary, QueryCondition.StartTime, QueryCondition.EndTime);
-
-                            appendstring += '</tr>';
-                            appendstring += '</tr>';
-                            $tbody.append(appendstring);
-                        });
+                        $tbody.append(appendstring);
+                        DrawLineChart(data);
                     },
                     error: function (data) {
                         //ajax 打出失敗要做的事
@@ -177,46 +221,46 @@
                 });
             });
 
-            const ctx = $("#ChartJS");
+            //const ctx = $("#ChartJS");
 
-            new Chart(ctx, {
-                /*type: 'bar',*/
-                data: {
-                    labels: ['Cum', ' ', '31U7YF', '31U7AT', '31U7YD', '31U7YE', '32U7AE'],
-                    datasets: [{
-                        type:'line',
-                        /*label: '# of Votes',*/
-                        data: [99.70,0,99.72,99.82,99.78,99.75,99.76],
-                        /*borderWidth:1*/
-                    }]
-                },
-                options: {
-                    scales:
-                    {
-                        y:
-                        {
-                            beginAtZero: true,
-                            ticks: {
-                                min: 0,
-                                max: 100,
-                                callback: function (value) {
-                                    return value + "%"
-                                }
-                            },
-                            scaleLabel: {
-                                display: true,
-                                labelString:"Persentage"
-                            }
-                        },
-                    },
-                    plugins: {
-                        legend:
-                        {
-                            display:false
-                        }
-                    }                    
-                }   
-            })
+            //new Chart(ctx, {
+            //    /*type: 'bar',*/
+            //    data: {
+            //        labels: ['Cum', ' ', '31U7YF', '31U7AT', '31U7YD', '31U7YE', '32U7AE'],
+            //        datasets: [{
+            //            type:'line',
+            //            /*label: '# of Votes',*/
+            //            data: [99.70,0,99.72,99.82,99.78,99.75,99.76],
+            //            /*borderWidth:1*/
+            //        }]
+            //    },
+            //    options: {
+            //        scales:
+            //        {
+            //            y:
+            //            {
+            //                beginAtZero: true,
+            //                ticks: {
+            //                    min: 0,
+            //                    max: 100,
+            //                    callback: function (value) {
+            //                        return value + "%"
+            //                    }
+            //                },
+            //                scaleLabel: {
+            //                    display: true,
+            //                    labelString:"Persentage"
+            //                }
+            //            },
+            //        },
+            //        plugins: {
+            //            legend:
+            //            {
+            //                display:false
+            //            }
+            //        }                    
+            //    }   
+            //})
 
 
         });

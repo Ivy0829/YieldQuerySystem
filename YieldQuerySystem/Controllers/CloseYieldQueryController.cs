@@ -20,7 +20,7 @@ namespace YieldQuerySystem.Controllers
             this._conn = conn;
         }
 
-        public string QueryYieldByLot(QueryDailyYield model)
+        public string QueryCloseYieldByLot(QueryDailyYield model)
         {
             List <CloseYieldByLotViewModel> vm = new List<CloseYieldByLotViewModel>();
 
