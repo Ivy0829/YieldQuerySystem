@@ -196,9 +196,9 @@
 
                         var appendstring = '<th scope="col">Date</th>' + '<th scope="col">Date</th>'
 
-                        data.sort(function (a, b) { return a.CloseDT - b.CloseDT });
+                        data.LotView.sort(function (a, b) { return a.CloseDT - b.CloseDT });
 
-                        data.forEach(function (item){
+                        data.LotView.forEach(function (item){
                             appendstring += '<th scope="col">' + mmddformat(item.CloseDT) + '</th>'
                         });
 
@@ -209,10 +209,11 @@
                         //add tbody
                         var $tbody = $table.append('<tbody />').children('tbody');
                         //add row
-                        appendstring = gettablestring(data);
+                        appendstring = gettablestring(data.LotView);
 
                         $tbody.append(appendstring);
-                        DrawLineChart(data);
+
+                        DrawLineChart(data.LotView);
                     },
                     error: function (data) {
                         //ajax 打出失敗要做的事

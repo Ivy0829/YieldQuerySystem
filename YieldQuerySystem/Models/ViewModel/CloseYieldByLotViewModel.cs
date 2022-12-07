@@ -14,7 +14,7 @@ namespace YieldQuerySystem.Models.ViewModel
         public int LossQty { get; set; }
         public string CloseDT { get; set; }
 
-        public List<LossData> lossDatas { get; set; }
+        public List<LossData> lossDatas { get; set; } = new List<LossData>();
 
 
 

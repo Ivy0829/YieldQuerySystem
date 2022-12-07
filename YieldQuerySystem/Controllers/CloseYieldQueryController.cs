@@ -22,14 +22,35 @@ namespace YieldQuerySystem.Controllers
 
         public string QueryCloseYieldByLot(QueryDailyYield model)
         {
-            List <CloseYieldByLotViewModel> vm = new List<CloseYieldByLotViewModel>();
-
+            CloseYieldByLotALLViewModel vm = new CloseYieldByLotALLViewModel();
+            //List <CloseYieldByLotViewModel> vm = new List<CloseYieldByLotViewModel>();
+            //List<CloseYieldByLotLossDataViewModel> lossvm = new List<CloseYieldByLotLossDataViewModel>();
             DataBaseConnection data = new DataBaseConnection(this._conn);
 
-            vm = data.QueryCloseYieldByLotData(model);
+            vm.LotView = data.QueryCloseYieldByLotData(model);
+
+            vm.LossData = data.QueryCloseYieldByLotLossData(model);
+
+            foreach (CloseYieldByLotLossDataViewModel LD in vm.LossData)
+            {
+                foreach(CloseYieldByLotViewModel cyvm in vm.LotView)
+                {
+                    if(LD.LotNo == cyvm.LotNo)
+                    {
+                        cyvm.lossDatas.Add(new LossData
+                        {
+                            LossCode=LD.LossCode,
+                            LossDesc=LD.LossDesc,
+                            LossQty = LD.LossQty
+                        });
+                    }
+                }
+            }
+            vm.LossData = vm.LossData.Distinct().ToList();
 
             return JsonSerializer.Serialize(vm);
         }
+        
 
 
 

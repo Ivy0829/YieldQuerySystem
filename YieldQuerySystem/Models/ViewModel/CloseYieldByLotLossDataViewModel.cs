@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace YieldQuerySystem.Models
+namespace YieldQuerySystem.Models.ViewModel
 {
-    public class LossData
+    public class CloseYieldByLotLossDataViewModel
     {
+        public string LotNo { get; set; }
+        public int LossQty { get; set; }
         public string LossCode { get; set; }
         public string LossDesc { get; set; }
-        public int LossQty { get; set; }
 
-     
+
+
+
+
+
     }
 }
