@@ -31,22 +31,47 @@ namespace YieldQuerySystem.Controllers
 
             vm.LossData = data.QueryCloseYieldByLotLossData(model);
 
-            foreach (CloseYieldByLotLossDataViewModel LD in vm.LossData)
+            //foreach (CloseYieldByLotLossDataViewModel LD in vm.LossData)
+            //{
+            //    foreach(CloseYieldByLotViewModel cyvm in vm.LotView)
+            //    {
+            //        if(LD.LotNo == cyvm.LotNo)
+            //        {
+            //            cyvm.lossDatas.Add(new LossData
+            //            {
+            //                LossCode=LD.LossCode,
+            //                LossDesc=LD.LossDesc,
+            //                LossQty = LD.LossQty
+            //                StageCode=LD.StageCode
+            //            });
+            //        }
+            //    }
+            //}
+            foreach (VMLossData VMLD in vm.LossData)
             {
-                foreach(CloseYieldByLotViewModel cyvm in vm.LotView)
+                if(!(vm.LossDataView.Exists(x => x.StageCode == VMLD.StageCode) && vm.LossDataView.Exists(x => x.LossCode == VMLD.LossCode)))
                 {
-                    if(LD.LotNo == cyvm.LotNo)
+                    vm.LossDataView.Add(new CloseYieldByLotLossDataViewModel
                     {
-                        cyvm.lossDatas.Add(new LossData
-                        {
-                            LossCode=LD.LossCode,
-                            LossDesc=LD.LossDesc,
-                            LossQty = LD.LossQty
-                        });
+                        StageCode=VMLD.StageCode,
+                        LossCode = VMLD.LossCode,
+                        LossDesc = VMLD.LossDesc,
+                    });
+                }
+            }
+            foreach (var LDV in vm.LossDataView)
+            {
+                foreach (VMLossData VMLD in vm.LossData)
+                {
+                    if ((LDV.StageCode == VMLD.StageCode) && (LDV.LossCode == VMLD.LossCode))
+                    {
+                        LDV.Cum += VMLD.UniLossQty;
+                        LDV.LD.Add(VMLD);
                     }
                 }
             }
-            vm.LossData = vm.LossData.Distinct().ToList();
+
+                vm.LossData = vm.LossData.Distinct().ToList();
 
             return JsonSerializer.Serialize(vm);
         }

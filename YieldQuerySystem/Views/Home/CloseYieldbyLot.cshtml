@@ -28,7 +28,7 @@
             var $table = $("#queryTable");
 
             var sumOverAllYield;
-            var myLinChart;
+            var myLineChart;
 
             function checkTime() {
                 var datedif = (new Date($("txtDateEnd").val()) - new Date($("txtDateStart").val())) / 1000 / 60 / 60 / 24;
@@ -61,55 +61,72 @@
             function gettablestring(data) {
 
                 appendstring = '<tr>'
-                appendstring += '<td>Schedule</td>' + '<td>Cum</td>'
-                var sumQtyIssue = 0, sumQtyOut = 0, sumLossQty = 0;
+                appendstring += '<td></td>' + '<td></td>' + '<td>Schedule</td>';
+                
                 data.forEach(function (item) {
                     //順便先算完
-                    sumQtyIssue += item.QtyIssue;
-                    sumQtyOut += item.QtyOut;
-                    sumLossQty += item.LossQty;
-                    appendstring += '<td>' + item.LotNo + '</td>'
-                    
+                    appendstring += '<td>' + item.LotNo + '</td>'            
                 });
-
-                sumOverAllYield = Math.round(sumQtyOut / sumQtyIssue*100000)/1000;
 
                 appendstring += '</tr>'
                 appendstring += "<tr>";
-                appendstring += "<td>Assy Input qty</td>"
-                appendstring += "<td>" + sumQtyIssue + "</td>";
+                appendstring += '<td></td>' + '<td></td>' + "<td>Assy Input qty</td>";
                 data.forEach(function (item) {
                     appendstring += '<td>' + item.QtyIssue + '</td>'
                 });
 
                 appendstring += "<tr>";
-                appendstring += "<td>Assy Output qty</td>"
-                appendstring += "<td>" + sumQtyOut + "</td>";
+                appendstring += '<td></td>' + '<td></td>' + "<td>Assy Output qty</td>"
                 data.forEach(function (item) {
                     appendstring += '<td>' + item.QtyOut + '</td>'
                 });
 
                 appendstring += "<tr>";
-                appendstring += "<td>Yield</td>"
-                appendstring += "<td>" + sumOverAllYield + "%" +"</td>";
+                appendstring += '<td></td>' + '<td></td>' +"<td>Assy Yield</td>"
                 data.forEach(function (item) {
                     appendstring += '<td>' + item.OverAllYield + "%" + '</td>'
                 });
 
                 appendstring += "<tr>";
-                appendstring += "<td>Loss Qty</td>"
-                appendstring += "<td>" + sumLossQty + "</td>";
+                appendstring += '<td></td>' + '<td></td>' +"<td>Loss Qty</td>"
                 data.forEach(function (item) {
                     appendstring += '<td>' + item.LossQty + '</td>'
                 });
 
                 return appendstring;
             }
+            function ErrorCodeTableString(data)
+            {
+                appendstring = '';
+                var flag = false;
+                data.LossDataView.forEach(function (item)
+                {
+                    appendstring += '<tr>'
+                    appendstring += '<td>' + item.StageCode + '</td>' + '<td>' + item.LossCode + '</td>' + '<td>' + item.LossDesc + '</td>';
+
+                    data.LotView.forEach(function (ViewLotNo)
+                    {
+                        var flag = false;
+                        item.LD.forEach(function (LDItem) {
+                            if (LDItem.LotNo == ViewLotNo.LotNo) {
+                                appendstring += '<td>' + LDItem.UniLossQty + '</td>';
+                                flag = true;
+                            }
+                        });
+                        if (!flag) {
+                            appendstring += '<td>' + '0' + '</td>';
+                        }
+                    });
+
+                    appendstring += '</tr>'
+                });
+                return appendstring;
+            }
 
             function DrawLineChart(data)
             {
                 const ctx = $("#ChartJS");
-                if (myLinChart) {
+                if (myLineChart) {
                     myLineChart.destroy();
                 }
                 
@@ -120,7 +137,7 @@
                     chartOverAllYield.push(item.OverAllYield)
                 });
 
-                myLinChart=new Chart(ctx, {
+                myLineChart=new Chart(ctx, {
                     data: {
                         labels: chartLabels,
                         datasets: [{
@@ -194,9 +211,18 @@
                         $("#queryTable > thead").remove();
                         $("#queryTable > tbody").remove();
 
-                        var appendstring = '<th scope="col">Date</th>' + '<th scope="col">Date</th>'
+                        var appendstring = '<th scope="col">StageCode</th>' + '<th scope="col">LossCode</th>' + '<th scope="col">Date</th>';
 
-                        data.LotView.sort(function (a, b) { return a.CloseDT - b.CloseDT });
+                        data.LotView.sort(function (a, b) {
+                            //a.CloseDT = mmddformat(a.CloseDT);
+                            //b.CloseDT = mmddformat(b.CloseDT);
+
+                            if (mmddformat(a.CloseDT) == mmddformat(b.CloseDT))
+                            {
+                                return -1;
+                            }
+                            return a.CloseDT - b.CloseDT
+                        });
 
                         data.LotView.forEach(function (item){
                             appendstring += '<th scope="col">' + mmddformat(item.CloseDT) + '</th>'
@@ -210,6 +236,10 @@
                         var $tbody = $table.append('<tbody />').children('tbody');
                         //add row
                         appendstring = gettablestring(data.LotView);
+
+                        $tbody.append(appendstring);
+
+                        appendstring = ErrorCodeTableString(data);
 
                         $tbody.append(appendstring);
 

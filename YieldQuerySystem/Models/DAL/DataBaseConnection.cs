@@ -222,10 +222,10 @@ namespace YieldQuerySystem.Models.DAL
             return vm;
         }
 
-        public List<CloseYieldByLotLossDataViewModel> QueryCloseYieldByLotLossData(QueryDailyYield model)
+        public List<VMLossData> QueryCloseYieldByLotLossData(QueryDailyYield model)
         {
 
-            List<CloseYieldByLotLossDataViewModel> vm = new List<CloseYieldByLotLossDataViewModel>();
+            List<VMLossData> vm = new List<VMLossData>();
             //List<CloseYieldByLotLossDataViewModel> lossvm = new List<CloseYieldByLotLossDataViewModel>();
             this._conn.Open();
             DynamicParameters parameters = new DynamicParameters();
@@ -238,7 +238,7 @@ namespace YieldQuerySystem.Models.DAL
             parameters.Add("@StartTime", model.StartTime, DbType.DateTime, ParameterDirection.Input);
             parameters.Add("@EndTime", model.EndTime, DbType.DateTime, ParameterDirection.Input);
 
-            var result = this._conn.Query<CloseYieldByLotLossDataViewModel>("[dbo].[SP_CloseYieldByLotLossData]", parameters, commandType: CommandType.StoredProcedure);
+            var result = this._conn.Query<VMLossData>("[dbo].[SP_CloseYieldByLotLossData]", parameters, commandType: CommandType.StoredProcedure);
             vm = result.ToList();
             this._conn.Close();
             return vm;

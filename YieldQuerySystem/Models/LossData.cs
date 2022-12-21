@@ -10,7 +10,8 @@ namespace YieldQuerySystem.Models
         public string LossCode { get; set; }
         public string LossDesc { get; set; }
         public int LossQty { get; set; }
+        public string StageCode { get; set; }
 
-     
+
     }
 }
