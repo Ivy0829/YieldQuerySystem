@@ -9,6 +9,9 @@ namespace YieldQuerySystem.Models.ViewModel
     {
         public string LotNo { get; set; }
         public int QtyIssue { get; set; }
+        public string YearCode { get; set; }
+        public string ShowDate { get; set; }
+        public int WeekNumber { get; set; }
         public int QtyOut { get; set; }
         public string OverAllYield { get; set; }
         public int LossQty { get; set; }

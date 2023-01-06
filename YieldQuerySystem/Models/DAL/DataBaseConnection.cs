@@ -215,6 +215,8 @@ namespace YieldQuerySystem.Models.DAL
             parameters.Add("@DeviceName", model.DeviceName, DbType.String, ParameterDirection.Input);
             parameters.Add("@StartTime", model.StartTime, DbType.DateTime, ParameterDirection.Input);
             parameters.Add("@EndTime", model.EndTime, DbType.DateTime, ParameterDirection.Input);
+            parameters.Add("@StartYearCode", model.StartYearCode, DbType.String, ParameterDirection.Input);
+            parameters.Add("@EndYearCode", model.EndYearCode, DbType.String, ParameterDirection.Input);
 
             var result = this._conn.Query<CloseYieldByLotViewModel>("[dbo].[SP_CloseYieldByLotData]", parameters, commandType: CommandType.StoredProcedure);
             vm = result.ToList();
@@ -237,6 +239,8 @@ namespace YieldQuerySystem.Models.DAL
             parameters.Add("@DeviceName", model.DeviceName, DbType.String, ParameterDirection.Input);
             parameters.Add("@StartTime", model.StartTime, DbType.DateTime, ParameterDirection.Input);
             parameters.Add("@EndTime", model.EndTime, DbType.DateTime, ParameterDirection.Input);
+            parameters.Add("@StartYearCode", model.StartYearCode, DbType.String, ParameterDirection.Input);
+            parameters.Add("@EndYearCode", model.EndYearCode, DbType.String, ParameterDirection.Input);
 
             var result = this._conn.Query<VMLossData>("[dbo].[SP_CloseYieldByLotLossData]", parameters, commandType: CommandType.StoredProcedure);
             vm = result.ToList();

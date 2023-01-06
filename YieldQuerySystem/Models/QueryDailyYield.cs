@@ -15,8 +15,7 @@ namespace YieldQuerySystem.Models
         public string DeviceName { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-
-
-
+        public string @StartYearCode { get; set; }
+        public string @EndYearCode { get; set; }
     }
 }
