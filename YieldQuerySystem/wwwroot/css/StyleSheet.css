@@ -241,4 +241,8 @@ body {
 .txt {
     font-size: 16px;
     padding: 12px;
+
+{
+    white-space:nowrap;
+}
 }

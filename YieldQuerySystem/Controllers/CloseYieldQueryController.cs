@@ -139,11 +139,20 @@ namespace YieldQuerySystem.Controllers
                                                                                   LossQty = x.Sum(y => y.LossQty),
                                                                                   QtyIssue = x.Sum(y => y.QtyIssue),
                                                                                   QtyOut = x.Sum(y => y.QtyOut),
-                                                                                  ShowDate = Convert.ToDateTime(x.FirstOrDefault().CloseDT).ToString("MMM", new CultureInfo("en-us")).Substring(0, 3),
+                                                                                  ShowDate = (x.FirstOrDefault().CloseDT).Substring(0, 5),
+                                                                                  //ShowDate = Convert.ToDateTime(x.FirstOrDefault().CloseDT).ToString("MMM", new CultureInfo("en-us")).Substring(0, 3),
                                                                                   YearCode = x.FirstOrDefault().CloseDT.ToString().Substring(8, 2)
                                                                               }).ToList();
 
-            return JsonSerializer.Serialize("");
+            return JsonSerializer.Serialize(vm);
+
+            //vm.YearLossDataView = LotView.GroupBy(x => new { YearCode = x.YearCode }).Select
+            //                                                                  (x => new CloseYieldByLotViewModel
+            //                                                                  {
+                                                                                 
+            //                                                                  }).ToList();
+
+
 
         }
 

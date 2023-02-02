@@ -29,7 +29,11 @@
 
             var sumOverAllYield;
             var myLineChart;
-
+            var MonthAry = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            var YearCount = [];
+            var MonthCount = [];
+            var WeeklyCount = [];
+            var DayCount = [];
             function checkTime() {
                 var datedif = (new Date($("txtDateEnd").val()) - new Date($("txtDateStart").val())) / 1000 / 60 / 60 / 24;
                 if ($("#txtDateStart").val() == '' || $("txtDateEnd").val() == '') {
@@ -58,79 +62,173 @@
                 return arydate;
             }
 
-            function gettableheadstring(data)
-            {
-                appendstring = '<th scope="col">StageCode</th>' + <th scope="col">LossCode</th> + <th scope="col">Date></th>
+            function WeekFromYear(DateT) {
+                var dateYear = DateT.getFullYear();
+                var dateMonth = DateT.getMonth() + 1;
+                var dateDay = DateT.getDate();
+                var dayMS = 24 * 60 * 60 * 1000;
+                var date1 = new Date(dateYear, 0, 1);
+                var firstDay = (7 - date1.getDay()) * dayMS;
+                var weekMS = 7 * dayMS;
+                date1 = date1.getTime();
+                DateT = DateT.getTime();
 
+                return Math.ceil((DateT - date1 - firstDay) / weekMS) + 1;
+            }
+
+            function initTable() {
+                $("#queryTable > thead").remove();
+                $("#queryTable > tbody").remove();
+                YearCount.length = 0;
+                MonthCount.length = 0;
+                WeeklyCount.length = 0;
+                DayCount.length = 0;
+            }
+
+            function gettableheadstring(StartTime, EndTime) {
+                appendstring = '<th scope="col">StageCode</th>' + '<th scope="col">LossCode</th>' + '<th scope="col">Date</th>';
+                var count = 0;
+                var Yearflag = 0;
                 StartTime = new Date(StartTime);
                 EndTime = new Date(EndTime);
 
-                if (StartTime.getFullYear() == EndTime.getFullYear()) {
-                    appendstring += '<th scope="col">'Y' + EndTime.getFullYear().toString().substr(2, 2) + '</th>';
+                if (StartTime.getFullYear() == EndTime.getFullYear())
+                {
+                    appendstring += '<th scope="col" id="Y' + StartTime.getFullYear().toString().substr(2, 2) + '">Y' + EndTime.getFullYear().toString().substr(2, 2) + '</th>';
+                    YearCount.push(StartTime.getFullYear().toString().substr(2, 2));
                 }
                 else
                 {
-                    appendstring += '<th scope="col">'Y' + StartTime.getFullYear().toString().substr(2, 2) + '</th>';
-                    appendstring += '<th scope="col">'Y' + EndTime.getFullYear().toString().substr(2, 2) + '</th>';
+                    appendstring += '<th scope="col" id="Y' + StartTime.getFullYear().toString().substr(2, 2) + '">Y' + StartTime.getFullYear().toString().substr(2, 2) + '</th>';
+                    appendstring += '<th scope="col" id="Y' + EndTime.getFullYear().toString().substr(2, 2) + '">Y' + EndTime.getFullYear().toString().substr(2, 2) + '</th>';
+                    YearCount.push(StartTime.getFullYear().toString().substr(2, 2));
+                    YearCount.push(EndTime.getFullYear().toString().substr(2, 2));       
                 }
-                //月還沒寫
-                for (int i = 3; i <= 0; i--)
+                //月
+                for (var setmonth = 3; setmonth >= 0; setmonth--) {
+                    count = 0;
+                    count = EndTime.getMonth() - setmonth;
+                    Yearflag = EndTime.getFullYear();
+                    if (count < 0) {
+                        count += 12;
+                        Yearflag -= 1;
+                    }
+                    appendstring += '<th scope="col" id="' + MonthAry[count] + '">' + MonthAry[count] + '\'' + Yearflag.toString().substr(2, 2) + '</th>';
+                    MonthCount.push((MonthAry[count] + Yearflag.toString().substr(2, 2)));
+                }
+                //週
+                for (var setWeek = 3; setWeek >= 0; setWeek--)
                 {
-            appendstring += '<th scope="col">(EndTime.getMonth()-i).toDateString().split('')[]
+                    count = 0;
+                    LastWeek = WeekFromYear(new Date((EndTime.getFullYear() - 1), 11, 31));
+                    count =WeekFromYear(EndTime)-setWeek;
+                    Yearflag = EndTime.getFullYear();
+                    if (count < 0) {
+                        count += LastWeek;
+                        Yearflag -= 1;
+                    }
+                    count += 1;
+                    appendstring += '<th scope="col" id="W' + count + '">W' + count + '\'' + Yearflag.toString().substr(2, 2) + '</th>';
+                    WeeklyCount.push(count + Yearflag.toString().substr(2, 2));
                 }
-                
-
-                //data.YearLotView.forEach(function (item)
-                //{
-                //    appendstring += '<th scope="col">Y'+item.ShowDate+'</th>'
-                //})
-                //data.MonthLotView.forEach(function (item) {
-                //    appendstring += '<th scope="col">' + item.ShowDate + '\'' + item.YearCode + '</th>'
-                //})
-                //data.WeeklyLotView.forEach(function (item) {
-                //    appendstring += '<th scope="col">Y' + item.ShowDate + '\'' + item.YearCode + '</th>'
-                //})
-                //data.DayLotView.forEach(function (item) {
-                //    appendstring += '<th scope="col">Y' + mmddFormat(item.ShowDate) + '</th>'
-                //})
+                //日
+                for (var setDay = 7; setDay >= 0; setDay--)
+                {
+                    var dateTime = new Date(EndTime);
+                    dateTime = new Date(dateTime.setDate(EndTime.getDate() - setDay));
+                    appendstring += '<th scope="col" id="D' + setDay + '">' + mmddformat(dateTime) + '</th>';
+                    DayCount.push(mmddformat(dateTime)+Yearflag.toString().substr(2,2));
+                }
 
                     return appendstring
             }
 
+            function checkqtyvar(item, DataTitle)
+            {
+                var QtyNumber = "";
+                switch (DataTitle) {
+                    case "Assy Input qty":
+                        QtyNumber = item.QtyIssue;
+                        break;
+                    case "Assy Output qty":
+                        QtyNumber = item.QtyOut;
+                        break;
+                    case "Assy Yield":
+                        QtyNumber = Math.round((item.QtyOut / item.QtyIssue) * 100).toFixed(3) + "%";
+                        break;
+                    case "Loss Qty":
+                        QtyNumber = item.LossQty;
+                        break;
+                }
+                return QtyNumber;
+            }
+
+            function getqtydata(appendstring, data, DataTitle)
+            {
+                appendstring += "<tr>";
+                appendstring += '<td></td>' + '<td></td>' + "<td>" + DataTitle + "</td>"
+
+                for (var i = 0; i < YearCount.length; i++) {
+                    data.YearLotView.forEach(function (item) {
+                        if (item.YearCode == YearCount[i]) {
+                            appendstring += '<td>' + checkqtyvar(item, DataTitle) + '</td>'
+                        }
+                        else {
+                            appendstring += '<td>' + " " + '</td>'
+                        }
+                    })
+                }
+                for (var i = 0; i < MonthCount.length; i++) {
+                    var matchflag = false;
+                    data.MonthLotView.forEach(function (item) {
+                        var str = item.ShowDate + item.YearCode;
+                        if (str == MonthCount[i]) {
+                            appendstring += '<td>' + checkqtyvar(item,DataTitle) + '</td>';
+                            matchflag = true;
+                        }
+                    });
+                    if (!matchflag) {
+                        appendstring += '<td>' + "" + '</td>';
+                    }
+                }
+                for (var i = 0; i < WeeklyCount.length; i++) {
+                    var matchflag = false;
+                    data.WeeklyLotView.forEach(function (item) {
+                        var str = item.ShowDate + item.YearCode;
+                        if (str == WeeklyCount[i]) {
+                            appendstring += '<td>' + checkqtyvar(item, DataTitle) + '</td>';
+                            matchflag = true;
+                        }
+                    });
+                    if (!matchflag) {
+                        appendstring += '<td>' + "" + '</td>';
+                    }
+                }
+                for (var i = 0; i < DayCount.length; i++) {
+                    var matchflag = false;
+                    data.DayLotView.forEach(function (item) {
+                        var str = item.ShowDate + item.YearCode;
+                        if (str == DayCount[i]) {
+                            appendstring += '<td>' + checkqtyvar(item, DataTitle) + '</td>';
+                            matchflag = true;
+                        }
+                    });
+                    if (!matchflag) {
+                        appendstring += '<td>' + "" + '</td>';
+                    }
+                }
+                appendstring += "</tr>";
+                return appendstring;
+            }
+
             function gettablestring(data) {
 
-                appendstring = '<tr>'
-                appendstring += '<td></td>' + '<td></td>' + '<td>Schedule</td>';
-
-                data.forEach(function (item) {
-                    //順便先算完
-                    appendstring += '<td>' + item.LotNo + '</td>'
-                });
-
+                appendstring = '<tr>';
                 appendstring += '</tr>'
-                appendstring += "<tr>";
-                appendstring += '<td></td>' + '<td></td>' + "<td>Assy Input qty</td>";
-                data.forEach(function (item) {
-                    appendstring += '<td>' + item.QtyIssue + '</td>'
-                });
-
-                appendstring += "<tr>";
-                appendstring += '<td></td>' + '<td></td>' + "<td>Assy Output qty</td>"
-                data.forEach(function (item) {
-                    appendstring += '<td>' + item.QtyOut + '</td>'
-                });
-
-                appendstring += "<tr>";
-                appendstring += '<td></td>' + '<td></td>' + "<td>Assy Yield</td>"
-                data.forEach(function (item) {
-                    appendstring += '<td>' + item.OverAllYield + "%" + '</td>'
-                });
-
-                appendstring += "<tr>";
-                appendstring += '<td></td>' + '<td></td>' + "<td>Loss Qty</td>"
-                data.forEach(function (item) {
-                    appendstring += '<td>' + item.LossQty + '</td>'
-                });
+                appendstring = getqtydata(appendstring, data, "Assy Input qty");
+                appendstring = getqtydata(appendstring, data, "Assy Output qty");
+                appendstring = getqtydata(appendstring, data, "Assy Yield");
+                appendstring = getqtydata(appendstring, data, "Loss Qty");
 
                 return appendstring;
             }
@@ -247,24 +345,11 @@
                     contentsType: 'acclication/json',
                     success: function (data) {
                         //ajax 打出成功要做的事
-                        $("#queryTable > thead").remove();
-                        $("#queryTable > tbody").remove();
+                        initTable();
+                        //$("#queryTable > thead").remove();
+                        //$("#queryTable > tbody").remove();
 
-                        var appendstring = '<th scope="col">StageCode</th>' + '<th scope="col">LossCode</th>' + '<th scope="col">Date</th>';
-
-                        data.LotView.sort(function (a, b) {
-                            //a.CloseDT = mmddformat(a.CloseDT);
-                            //b.CloseDT = mmddformat(b.CloseDT);
-
-                            if (mmddformat(a.CloseDT) == mmddformat(b.CloseDT)) {
-                                return -1;
-                            }
-                            return a.CloseDT - b.CloseDT
-                        });
-
-                        data.LotView.forEach(function (item) {
-                            appendstring += '<th scope="col">' + mmddformat(item.CloseDT) + '</th>'
-                        });
+                        var appendstring = gettableheadstring(QueryCondition.StartTime, QueryCondition.EndTime);
 
                         $table.append('<thead>').children("thead")
                             .append('<tr>').children('tr')
@@ -273,15 +358,12 @@
                         //add tbody
                         var $tbody = $table.append('<tbody />').children('tbody');
                         //add row
-                        appendstring = gettablestring(data.LotView);
+                        appendstring = gettablestring(data);
 
                         $tbody.append(appendstring);
 
-                        appendstring = ErrorCodeTableString(data);
 
-                        $tbody.append(appendstring);
-
-                        DrawLineChart(data.LotView);
+                        /*DrawLineChart(data.LotView);*/
                     },
                     error: function (data) {
                         //ajax 打出失敗要做的事
