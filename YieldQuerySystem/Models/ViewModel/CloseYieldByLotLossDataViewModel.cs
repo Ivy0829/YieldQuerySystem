@@ -13,6 +13,9 @@ namespace YieldQuerySystem.Models.ViewModel
         public string LossCode { get; set; }
         public string LossDesc { get; set; }
         public string StageCode { get; set; }
+        public string YearCode { get; set; }
+        public string CloseDT { get; set; }
+        public string WeekNumber { get; set; }
     }
     public class CloseYieldByLotLossDataViewModel
     {
@@ -21,7 +24,14 @@ namespace YieldQuerySystem.Models.ViewModel
         public string LossDesc { get; set; }
         public int Cum { get; set; }
 
+        public string YearCode { get; set; }
+
+        public string ShowDate { get; set; }
+
         public List<VMLossData> LD { get; set; } = new List<VMLossData>();
+
+
+
 
     }
 }

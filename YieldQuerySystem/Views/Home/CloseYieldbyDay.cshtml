@@ -239,22 +239,45 @@
             function ErrorCodeTableString(data) {
                 appendstring = '';
                 var flag = false;
-                data.LossDataView.forEach(function (item) {
+                data.YearLossDataView.forEach(function (item) {
                     appendstring += '<tr>'
                     appendstring += '<td>' + item.StageCode + '</td>' + '<td>' + item.LossCode + '</td>' + '<td>' + item.LossDesc + '</td>';
-
-                    data.LotView.forEach(function (ViewLotNo) {
-                        var flag = false;
-                        item.LD.forEach(function (LDItem) {
-                            if (LDItem.LotNo == ViewLotNo.LotNo) {
-                                appendstring += '<td>' + LDItem.UniLossQty + '</td>';
-                                flag = true;
-                            }
-                        });
-                        if (!flag) {
-                            appendstring += '<td>' + '0' + '</td>';
+                    //年
+                    for (var i = 0; i < data.Yearconfig.length; i++)
+                    {
+                        if (item.YearCode === data.Yearconfig[i])
+                        {
+                           appendstring +='<td>'+item.Cum+'</td>' 
                         }
-                    });
+                        else
+                        {
+                            appendstring += '<td>' + "0" + '</td>'
+                        }
+                    }
+                    //月
+                    for (var i = 0; i < data.Yearconfig.length; i++) {
+                        if (item.YearCode === data.Yearconfig[i]) {
+                            appendstring += '<td>' + item.Cum + '</td>'
+                        }
+                        else {
+                            appendstring += '<td>' + "0" + '</td>'
+                        }
+                    }
+
+
+
+                    //data.LotView.forEach(function (ViewLotNo) {
+                    //    var flag = false;
+                    //    item.LD.forEach(function (LDItem) {
+                    //        if (LDItem.LotNo == ViewLotNo.LotNo) {
+                    //            appendstring += '<td>' + LDItem.UniLossQty + '</td>';
+                    //            flag = true;
+                    //        }
+                    //    });
+                    //    if (!flag) {
+                    //        appendstring += '<td>' + '0' + '</td>';
+                    //    }
+                    //});
 
                     appendstring += '</tr>'
                 });
@@ -362,6 +385,9 @@
 
                         $tbody.append(appendstring);
 
+                        appendstring = ErrorCodeTableString(data);
+
+                        $tbody.append(appendstring);
 
                         /*DrawLineChart(data.LotView);*/
                     },
