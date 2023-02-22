@@ -84,62 +84,27 @@
                 WeeklyCount.length = 0;
                 DayCount.length = 0;
             }
-
-            function gettableheadstring(StartTime, EndTime) {
+       /////////////////////////////
+            function gettableheadstring(Config)
+            {
                 appendstring = '<th scope="col">StageCode</th>' + '<th scope="col">LossCode</th>' + '<th scope="col">Date</th>';
-                var count = 0;
-                var Yearflag = 0;
-                StartTime = new Date(StartTime);
-                EndTime = new Date(EndTime);
 
-                if (StartTime.getFullYear() == EndTime.getFullYear())
+                Config.YearConfig.forEach(function(item)
                 {
-                    appendstring += '<th scope="col" id="Y' + StartTime.getFullYear().toString().substr(2, 2) + '">Y' + EndTime.getFullYear().toString().substr(2, 2) + '</th>';
-                    YearCount.push(StartTime.getFullYear().toString().substr(2, 2));
-                }
-                else
+                    appendstring += '<th scope="col" id="Y' + item + '">Y' + item + '</th>';
+                })
+                Config.MonthConfig.forEach(function (item)
                 {
-                    appendstring += '<th scope="col" id="Y' + StartTime.getFullYear().toString().substr(2, 2) + '">Y' + StartTime.getFullYear().toString().substr(2, 2) + '</th>';
-                    appendstring += '<th scope="col" id="Y' + EndTime.getFullYear().toString().substr(2, 2) + '">Y' + EndTime.getFullYear().toString().substr(2, 2) + '</th>';
-                    YearCount.push(StartTime.getFullYear().toString().substr(2, 2));
-                    YearCount.push(EndTime.getFullYear().toString().substr(2, 2));       
-                }
-                //月
-                for (var setmonth = 3; setmonth >= 0; setmonth--) {
-                    count = 0;
-                    count = EndTime.getMonth() - setmonth;
-                    Yearflag = EndTime.getFullYear();
-                    if (count < 0) {
-                        count += 12;
-                        Yearflag -= 1;
-                    }
-                    appendstring += '<th scope="col" id="' + MonthAry[count] + '">' + MonthAry[count] + '\'' + Yearflag.toString().substr(2, 2) + '</th>';
-                    MonthCount.push((MonthAry[count] + Yearflag.toString().substr(2, 2)));
-                }
-                //週
-                for (var setWeek = 3; setWeek >= 0; setWeek--)
+                    appendstring += '<th scope="col" id="M' + item + '">' + item +  '</th>';
+                })
+                Config.WeeklyConfig.forEach(function (item)
                 {
-                    count = 0;
-                    LastWeek = WeekFromYear(new Date((EndTime.getFullYear() - 1), 11, 31));
-                    count =WeekFromYear(EndTime)-setWeek;
-                    Yearflag = EndTime.getFullYear();
-                    if (count < 0) {
-                        count += LastWeek;
-                        Yearflag -= 1;
-                    }
-                    count += 1;
-                    appendstring += '<th scope="col" id="W' + count + '">W' + count + '\'' + Yearflag.toString().substr(2, 2) + '</th>';
-                    WeeklyCount.push(count + Yearflag.toString().substr(2, 2));
-                }
-                //日
-                for (var setDay = 7; setDay >= 0; setDay--)
+                    appendstring += '<th scope="col" id="W' + item + '">W' + item +'</th>';
+                })
+                Config.DayConfig.forEach(function (item)
                 {
-                    var dateTime = new Date(EndTime);
-                    dateTime = new Date(dateTime.setDate(EndTime.getDate() - setDay));
-                    appendstring += '<th scope="col" id="D' + setDay + '">' + mmddformat(dateTime) + '</th>';
-                    DayCount.push(mmddformat(dateTime)+Yearflag.toString().substr(2,2));
-                }
-
+                    appendstring += '<th scope="col" id="D' + item + '">' + item + '</th>';
+                })            
                     return appendstring
             }
 
@@ -168,9 +133,9 @@
                 appendstring += "<tr>";
                 appendstring += '<td></td>' + '<td></td>' + "<td>" + DataTitle + "</td>"
 
-                for (var i = 0; i < YearCount.length; i++) {
+                for (var i = 0; i < data.Config.YearConfig.length; i++) {
                     data.YearLotView.forEach(function (item) {
-                        if (item.YearCode == YearCount[i]) {
+                        if (item.YearCode == data.Config.YearConfig[i]) {
                             appendstring += '<td>' + checkqtyvar(item, DataTitle) + '</td>'
                         }
                         else {
@@ -178,11 +143,11 @@
                         }
                     })
                 }
-                for (var i = 0; i < MonthCount.length; i++) {
+                for (var i = 0; i < data.Config.MonthConfig.length; i++) {
                     var matchflag = false;
                     data.MonthLotView.forEach(function (item) {
-                        var str = item.ShowDate + item.YearCode;
-                        if (str == MonthCount[i]) {
+                        var str = item.ShowDate + "'"+ item.YearCode;
+                        if (str == data.Config.MonthConfig[i]) {
                             appendstring += '<td>' + checkqtyvar(item,DataTitle) + '</td>';
                             matchflag = true;
                         }
@@ -191,11 +156,11 @@
                         appendstring += '<td>' + "" + '</td>';
                     }
                 }
-                for (var i = 0; i < WeeklyCount.length; i++) {
+                for (var i = 0; i < data.Config.WeeklyConfig.length; i++) {
                     var matchflag = false;
                     data.WeeklyLotView.forEach(function (item) {
-                        var str = item.ShowDate + item.YearCode;
-                        if (str == WeeklyCount[i]) {
+                        var str = item.ShowDate + "'" +item.YearCode;
+                        if (str == data.Config.WeeklyConfig[i]) {
                             appendstring += '<td>' + checkqtyvar(item, DataTitle) + '</td>';
                             matchflag = true;
                         }
@@ -204,11 +169,11 @@
                         appendstring += '<td>' + "" + '</td>';
                     }
                 }
-                for (var i = 0; i < DayCount.length; i++) {
+                for (var i = 0; i < data.Config.DayConfig.length; i++) {
                     var matchflag = false;
                     data.DayLotView.forEach(function (item) {
                         var str = item.ShowDate + item.YearCode;
-                        if (str == DayCount[i]) {
+                        if (str == data.Config.DayConfig[i]) {
                             appendstring += '<td>' + checkqtyvar(item, DataTitle) + '</td>';
                             matchflag = true;
                         }
@@ -235,6 +200,29 @@
 
 
 
+            function ErrorCodeDataString(item,dataitems,Config)
+            {
+                let appendstring = ''
+                dataitems.forEach(function (dataitem) {
+                    if (item.StageCode == dataitem.StageCode && item.LossCode == dataitem.LossCode) {
+                        var str = dataitem.ShowDate + "'" + dataitem.YearCode;
+                        for (var i = 0; i < Config.length; i++) {
+                            if (str == Config[i]) {
+                                appendstring += '<td>' + dataitem.Cum + '</td>'
+                            }
+                            else {
+                                appendstring += '<td>' + "0" + '</td>'
+                            }
+                        }
+                    }
+                });
+                return appendstring;
+            }
+
+
+
+
+
 
             function ErrorCodeTableString(data) {
                 appendstring = '';
@@ -243,9 +231,10 @@
                     appendstring += '<tr>'
                     appendstring += '<td>' + item.StageCode + '</td>' + '<td>' + item.LossCode + '</td>' + '<td>' + item.LossDesc + '</td>';
                     //年
-                    for (var i = 0; i < data.Yearconfig.length; i++)
+                    var str =   item.YearCode;
+                    for (var i = 0; i < data.Config.YearConfig.length; i++)
                     {
-                        if (item.YearCode === data.Yearconfig[i])
+                        if (item.YearCode === data.Config.YearConfig[i])
                         {
                            appendstring +='<td>'+item.Cum+'</td>' 
                         }
@@ -254,30 +243,38 @@
                             appendstring += '<td>' + "0" + '</td>'
                         }
                     }
-                    //月
-                    for (var i = 0; i < data.Yearconfig.length; i++) {
-                        if (item.YearCode === data.Yearconfig[i]) {
-                            appendstring += '<td>' + item.Cum + '</td>'
-                        }
-                        else {
-                            appendstring += '<td>' + "0" + '</td>'
-                        }
-                    }
 
-
-
-                    //data.LotView.forEach(function (ViewLotNo) {
-                    //    var flag = false;
-                    //    item.LD.forEach(function (LDItem) {
-                    //        if (LDItem.LotNo == ViewLotNo.LotNo) {
-                    //            appendstring += '<td>' + LDItem.UniLossQty + '</td>';
-                    //            flag = true;
+                    //data.MonthLossDataView.forEach(function (monthitem)
+                    //{
+                    //    if (item.StageCode == monthitem.StageCode && item.LossCode == monthitem.LossCode)
+                    //    {
+                    //        var str = monthitem.ShowDate + "'" + monthitem.YearCode;
+                    //        for (var i = 0; i < data.Config.MonthConfig.length; i++) {
+                    //            if (str == data.Config.MonthConfig[i]) {
+                    //                appendstring += '<td>' + monthitem.Cum + '</td>'
+                    //            }
+                    //            else {
+                    //                appendstring += '<td>' + "0" + '</td>'
+                    //            }
                     //        }
-                    //    });
-                    //    if (!flag) {
-                    //        appendstring += '<td>' + '0' + '</td>';
                     //    }
-                    //});
+                    //})
+                    //data.WeeklyLossDataView.forEach(function (Weeklyitem) {
+                    //    if (item.StageCode == Weeklyitem.StageCode && item.LossCode == Weeklyitem.LossCode) {
+                    //        var str = Weeklyitem.ShowDate + "'" + Weeklyitem.YearCode;
+                    //        for (var i = 0; i < data.Config.MonthConfig.length; i++) {
+                    //            if (str == data.Config.WeeklyConfig[i]) {
+                    //                appendstring += '<td>' + Weeklyitem.Cum + '</td>'
+                    //            }
+                    //            else {
+                    //                appendstring += '<td>' + "0" + '</td>'
+                    //            }
+                    //        }
+                    //    }
+                    //})
+                    appendstring += ErrorCodeDataString(item, data.MonthLossDataView, data.Config.MonthConfig);
+                    appendstring += ErrorCodeDataString(item, data.WeeklyLossDataView, data.Config.WeeklyConfig);
+                    appendstring += ErrorCodeDataString(item, data.DayLossDataView, data.Config.DayConfig);
 
                     appendstring += '</tr>'
                 });
@@ -372,7 +369,7 @@
                         //$("#queryTable > thead").remove();
                         //$("#queryTable > tbody").remove();
 
-                        var appendstring = gettableheadstring(QueryCondition.StartTime, QueryCondition.EndTime);
+                        var appendstring = gettableheadstring(data.Config);
 
                         $table.append('<thead>').children("thead")
                             .append('<tr>').children('tr')

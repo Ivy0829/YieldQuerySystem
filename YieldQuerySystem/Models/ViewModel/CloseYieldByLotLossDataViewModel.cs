@@ -15,7 +15,7 @@ namespace YieldQuerySystem.Models.ViewModel
         public string StageCode { get; set; }
         public string YearCode { get; set; }
         public string CloseDT { get; set; }
-        public string WeekNumber { get; set; }
+        public int WeekNumber { get; set; }
     }
     public class CloseYieldByLotLossDataViewModel
     {

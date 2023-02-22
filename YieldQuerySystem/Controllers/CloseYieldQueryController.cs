@@ -26,7 +26,27 @@ namespace YieldQuerySystem.Controllers
             {
                 data.WeekNumber = myCal.GetWeekOfYear(Convert.ToDateTime(data.CloseDT), myCWR, myFirstDOW);
             }
-            
+        }
+
+        private void GetWeekNumber(ref List<VMLossData> LossData)
+        {
+            CultureInfo myCI = new CultureInfo("zh-TW");
+            Calendar myCal = myCI.Calendar;
+            CalendarWeekRule myCWR = myCI.DateTimeFormat.CalendarWeekRule;
+            DayOfWeek myFirstDOW = myCI.DateTimeFormat.FirstDayOfWeek;
+            foreach (var data in LossData)
+            {
+                data.WeekNumber = myCal.GetWeekOfYear(Convert.ToDateTime(data.CloseDT), myCWR, myFirstDOW);
+            }
+        }
+
+        private int GetWeekNumber(DateTime time)
+        {
+            CultureInfo myCI = new CultureInfo("zh-TW");
+            Calendar myCal = myCI.Calendar;
+            CalendarWeekRule myCWR = myCI.DateTimeFormat.CalendarWeekRule;
+            DayOfWeek myFirstDOW = myCI.DateTimeFormat.FirstDayOfWeek;
+            return myCal.GetWeekOfYear(Convert.ToDateTime(time), myCWR, myFirstDOW);
         }
 
         public CloseYieldQueryController(IDbConnection conn)
@@ -106,13 +126,54 @@ namespace YieldQuerySystem.Controllers
             List<VMLossData> LossData = data.QueryCloseYieldByLotLossData(model);
 
             GetWeekNumber(ref LotView);
+            GetWeekNumber(ref LossData);
 
             CloseYieldSummaryViewModel vm = new CloseYieldSummaryViewModel();
 
             for (int i = Int32.Parse(model.StartYearCode); i <= Int32.Parse(model.EndYearCode);i++)
             {
-                vm.Yearconfig.Add(i.ToString());
+                vm.Config.YearConfig.Add(2.ToString() +i.ToString());
             }
+            string[] MonthAry = { "0", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+            for (int i = 3; i>=0; i--)
+            {
+                if((model.EndTime.Month - i)<0)
+                { 
+                    vm.Config.MonthConfig.Add(MonthAry[model.EndTime.Month-i+12]+"'"+((model.EndTime.Year % 100) - 1).ToString());
+                }
+                else 
+                {
+                    vm.Config.MonthConfig.Add(MonthAry[model.EndTime.Month - i ] + "'" + ((model.EndTime.Year % 100)).ToString());
+                }
+            }
+
+            int weeklyNum = GetWeekNumber(model.EndTime);
+            for (int i = 3; i >= 0; i--)
+            {
+                if ((weeklyNum - i) < 0)
+                {
+                    vm.Config.WeeklyConfig.Add((weeklyNum - i + 52).ToString() + "'" + ((model.EndTime.Year % 100) - 1).ToString());
+                }
+                else
+                {
+                    vm.Config.WeeklyConfig.Add((weeklyNum - i).ToString() + "'" + ((model.EndTime.Year % 100) ).ToString());
+                }
+            }
+
+
+            for (int i = 6; i >= 0; i--)
+            {
+                if (model.EndTime.Month.ToString().Length < 2)
+                {
+                    vm.Config.DayConfig.Add("0"+model.EndTime.Month.ToString() + "/" + (model.EndTime.Day-i).ToString());
+                }
+                else
+                {
+                    vm.Config.DayConfig.Add(model.EndTime.Month.ToString() + "/" + (model.EndTime.Day-i).ToString());
+                }
+            }
+
 
             vm.YearLotView = LotView.GroupBy(x => new { YearCode = x.YearCode }).Select
                                                                               (x => new CloseYieldByLotViewModel
@@ -159,7 +220,7 @@ namespace YieldQuerySystem.Controllers
                                                                               (x => new CloseYieldByLotLossDataViewModel
                                                                               {
                                                                                   StageCode=x.FirstOrDefault().StageCode,
-                                                                                  YearCode=x.FirstOrDefault().YearCode,
+                                                                                  YearCode = x.FirstOrDefault().CloseDT.ToString().Substring(8, 2),
                                                                                   LossCode = x.FirstOrDefault().LossCode,
                                                                                   LossDesc = x.FirstOrDefault().LossDesc,
                                                                                   ShowDate = x.FirstOrDefault().CloseDT.ToString().Substring(8, 2),
@@ -169,33 +230,36 @@ namespace YieldQuerySystem.Controllers
                                                                   (x => new CloseYieldByLotLossDataViewModel
                                                                   {
                                                                       StageCode = x.FirstOrDefault().StageCode,
-                                                                      YearCode = x.FirstOrDefault().YearCode,
+                                                                      YearCode = x.FirstOrDefault().CloseDT.ToString().Substring(8,2),
                                                                       LossCode = x.FirstOrDefault().LossCode,
                                                                       LossDesc = x.FirstOrDefault().LossDesc,
                                                                       ShowDate=Convert.ToDateTime(x.FirstOrDefault().CloseDT).ToString("MMMM",new CultureInfo("en-us")).Substring(0,3),
+                                                                      Cum = x.Sum(y => y.UniLossQty)
                                                                   }).ToList();
         vm.WeeklyLossDataView = LossData.GroupBy(x => new { YearCode = x.YearCode, StageCode = x.StageCode, LossCode = x.LossCode,WeekNumber = x.WeekNumber }).Select
                                                                   (x => new CloseYieldByLotLossDataViewModel
                                                                   {
                                                                       StageCode = x.FirstOrDefault().StageCode,
-                                                                      YearCode = x.FirstOrDefault().YearCode,
+                                                                      YearCode = x.FirstOrDefault().CloseDT.ToString().Substring(8, 2),
                                                                       LossCode = x.FirstOrDefault().LossCode,
                                                                       LossDesc = x.FirstOrDefault().LossDesc,
                                                                       ShowDate=x.FirstOrDefault().WeekNumber.ToString(),
+                                                                      Cum = x.Sum(y => y.UniLossQty)
                                                                   }).ToList();
         vm.DayLossDataView = LossData.GroupBy(x => new { YearCode = x.YearCode, StageCode = x.StageCode, LossCode = x.LossCode, WeekNumber = x.WeekNumber }).Select
                                                           (x => new CloseYieldByLotLossDataViewModel
                                                           {
                                                               StageCode = x.FirstOrDefault().StageCode,
-                                                              YearCode = x.FirstOrDefault().YearCode,
+                                                              YearCode = x.FirstOrDefault().CloseDT.ToString().Substring(8, 2),
                                                               LossCode = x.FirstOrDefault().LossCode,
                                                               LossDesc = x.FirstOrDefault().LossDesc,
                                                               ShowDate = (x.FirstOrDefault().CloseDT).Substring(0,5),
+                                                              Cum = x.Sum(y => y.UniLossQty)
                                                           }).ToList();
 
 
 
-return JsonSerializer.Serialize(vm);
+            return JsonSerializer.Serialize(vm);
 
         }
 

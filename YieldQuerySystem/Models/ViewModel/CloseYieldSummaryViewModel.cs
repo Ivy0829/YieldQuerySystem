@@ -19,6 +19,12 @@ namespace YieldQuerySystem.Models.ViewModel
         public List<CloseYieldByLotLossDataViewModel> WeeklyLossDataView { get; set; } = new List<CloseYieldByLotLossDataViewModel>();
         public List<CloseYieldByLotLossDataViewModel> DayLossDataView { get; set; } = new List<CloseYieldByLotLossDataViewModel>();
 
-        public List<string> Yearconfig { get; set; } = new List<string>();
+        public ShowConfig Config { get; set; } = new ShowConfig();
+    }
+    public class ShowConfig { 
+        public List<string> YearConfig { get; set; } = new List<string>();
+        public List<string> MonthConfig { get; set; } = new List<string>();
+        public List<string> WeeklyConfig { get; set; } = new List<string>();
+        public List<string> DayConfig { get; set; } = new List<string>();
     }
 }
